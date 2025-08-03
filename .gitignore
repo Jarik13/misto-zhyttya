@@ -1,0 +1,90 @@
+# ======================
+# Java / Spring / Maven
+# ======================
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# ======================
+# Visual Studio / .NET
+# ======================
+## Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+bld/
+
+## VS-specific
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+## NuGet
+packages/
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## Rider / ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+## DotCover
+.idea/.dotCover
+
+# ======================
+# VS Code
+# ======================
+.vscode/
+
+
+# ======================
+# OS / Misc
+# ======================
+.DS_Store
+Thumbs.db
+*.tlog
+*.cache
+*.dbmdl
+*.dbmdl-journal
+*.pidb
+*.svclog
+*.userprefs
