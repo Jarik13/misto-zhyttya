@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   ### Auth Service
   auth-service:
@@ -14,6 +12,9 @@ services:
       SPRING_DATASOURCE_USERNAME: username
       SPRING_DATASOURCE_PASSWORD: password
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
     depends_on:
       - auth-db
 
