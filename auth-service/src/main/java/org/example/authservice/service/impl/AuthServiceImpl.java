@@ -1,5 +1,7 @@
 package org.example.authservice.service.impl;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.authservice.dto.auth.LoginRequest;
 import org.example.authservice.dto.auth.RegistrationRequest;
@@ -23,12 +25,18 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public void register(RegistrationRequest registrationRequest) {
+    @Transactional
+    public void register(RegistrationRequest request, HttpServletResponse response) {
 
     }
 
     @Override
-    public void login(LoginRequest loginRequest) {
+    public void login(LoginRequest request, HttpServletResponse response) {
+
+    }
+
+    @Override
+    public void refreshAccessToken() {
 
     }
 
