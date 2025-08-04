@@ -10,17 +10,19 @@ import org.example.authservice.dto.auth.LoginRequest;
 import org.example.authservice.dto.auth.RegistrationRequest;
 import org.example.authservice.service.AuthService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Tag(name = "Authentication", description = "Endpoints for user authentication and authorization")
 public class AuthController {
     private final AuthService authService;
 
+    @Operation(summary = "Register a new user")
     @PostMapping("/register")
     public ResponseEntity<MessageResponse> registerUser(@Valid @RequestBody RegistrationRequest request,
                                                         HttpServletResponse response) {
@@ -28,6 +30,7 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse("User registered successfully"));
     }
 
+    @Operation(summary = "Log in a user")
     @PostMapping("/login")
     public ResponseEntity<MessageResponse> loginUser(@Valid @RequestBody LoginRequest request,
                                                      HttpServletResponse response) {
@@ -35,6 +38,7 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse("User logged in successfully"));
     }
 
+    @Operation(summary = "Refresh access token using refresh token")
     @PostMapping("/refresh")
     public ResponseEntity<Void> refreshAccessToken(HttpServletRequest request,
                                                    HttpServletResponse response) {
@@ -42,6 +46,7 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Log out a user and invalidate tokens")
     @PostMapping("/logout")
     public ResponseEntity<MessageResponse> logoutUser(HttpServletRequest request,
                                                       HttpServletResponse response) {
@@ -49,6 +54,7 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse("User logged out successfully"));
     }
 
+    @Operation(summary = "Change user password")
     @PostMapping("/change-password")
     public ResponseEntity<MessageResponse> changePassword(@Valid @RequestBody ChangePasswordRequest request,
                                                           HttpServletRequest httpRequest) {
