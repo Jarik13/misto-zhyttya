@@ -68,6 +68,10 @@ public class JwtService {
         return buildToken(claims.getSubject(), claims, accessTokenExpiration);
     }
 
+    public String extractEmail(String token) {
+        return extractClaims(token).getSubject();
+    }
+
 
     private String buildToken(String subject, Map<String, Object> claims, Long expiration) {
         return Jwts.builder()
