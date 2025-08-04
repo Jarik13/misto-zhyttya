@@ -19,7 +19,6 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "refreshToken")
 public class User implements UserDetails {
 
     @Id
