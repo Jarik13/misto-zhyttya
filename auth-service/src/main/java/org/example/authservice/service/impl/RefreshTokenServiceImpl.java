@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     }
 
     @Override
-    public void deleteByUser(User user) {
-        refreshTokenRepository.deleteByUser(user);
+    public void deleteByUserId(UUID userId) {
+        refreshTokenRepository.deleteByUserId(userId);
     }
 }
