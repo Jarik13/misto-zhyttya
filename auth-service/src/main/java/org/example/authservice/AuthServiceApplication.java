@@ -14,5 +14,4 @@ public class AuthServiceApplication {
     public void printSwaggerUrl() {
         System.out.println("Swagger UI: http://localhost:4001/swagger-ui/index.html");
     }
-
 }
