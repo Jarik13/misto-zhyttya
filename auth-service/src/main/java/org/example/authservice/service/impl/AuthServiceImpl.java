@@ -81,7 +81,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private UUID getUserIdFromRequest(HttpServletRequest request) {
-        return UUID.fromString(jwtService.extractUserId(cookieUtils.getAccessToken(request)))
+        return UUID.fromString(jwtService.extractUserId(cookieUtils.getAccessToken(request)));
     }
 
     private void checkUserEmail(String email) {
