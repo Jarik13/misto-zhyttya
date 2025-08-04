@@ -83,6 +83,10 @@ public class JwtService {
         return extractClaims(token).getSubject();
     }
 
+    public String extractUserId(String token) {
+        return extractClaims(token).get(USER_ID, String.class);
+    }
+
 
     private String buildToken(String subject, Map<String, Object> claims, Long expiration) {
         return Jwts.builder()
