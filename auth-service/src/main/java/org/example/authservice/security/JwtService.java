@@ -56,6 +56,11 @@ public class JwtService {
     }
 
     public String refreshAccessToken(String refreshToken) {
+        Claims claims = extractClaims(refreshToken);
+        if (!"refresh_token".equals(claims.get(TOKEN_TYPE))) {
+            throw new IllegalArgumentException("Invalid refresh token");
+        }
+
         return null;
     }
 
@@ -68,6 +73,10 @@ public class JwtService {
                 .expiration(Date.from(Instant.now().plusSeconds(expiration)))
                 .signWith(privateKey)
                 .compact();
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractClaims(token).getExpiration().before(new Date());
     }
 
     private Claims extractClaims(String token) {
