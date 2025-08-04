@@ -30,6 +30,14 @@ public record RegistrationRequest(
 
         @NotNull(message = "Date of birth must not be null")
         @Past(message = "Date of birth must be in the past")
-        LocalDate dateOfBirth
+        LocalDate dateOfBirth,
+
+        @NotBlank(message = "Gender must not be empty")
+        @Pattern(regexp = "^(?i)(male|female|other)$", message = "Gender must be 'male', 'female' or 'other'")
+        String gender,
+
+        @NotBlank(message = "Avatar URL must not be empty")
+        @Pattern(regexp = "^(https?://).+", message = "Avatar URL must be a valid URL")
+        String avatarUrl
 ) {
 }
