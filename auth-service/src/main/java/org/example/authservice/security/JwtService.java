@@ -68,6 +68,17 @@ public class JwtService {
         return buildToken(claims.getSubject(), claims, accessTokenExpiration);
     }
 
+    public boolean isTokenValid(String token, String expectedEmail) {
+        if (token == null || token.isEmpty()) {
+            return false;
+        }
+        try {
+            return extractEmail(token).equals(expectedEmail) && !isTokenExpired(token);
+        } catch (RuntimeException ex) {
+            return false;
+        }
+    }
+
     public String extractEmail(String token) {
         return extractClaims(token).getSubject();
     }
