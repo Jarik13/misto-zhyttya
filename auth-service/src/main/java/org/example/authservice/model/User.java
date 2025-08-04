@@ -16,6 +16,7 @@ import java.util.UUID;
 @Table(name = "users")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "refreshToken")
