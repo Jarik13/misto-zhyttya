@@ -44,6 +44,14 @@ public class JwtService {
         return buildToken(subject, claims, accessTokenExpiration);
     }
 
+    public String generateRefreshToken(String subject, String userId) {
+        Map<String, Object> claims = Map.of(
+                TOKEN_TYPE, "refresh_token",
+                USER_ID, userId
+        );
+        return buildToken(subject, claims, refreshTokenExpiration);
+    }
+
 
     private String buildToken(String subject, Map<String, Object> claims, Long expiration) {
         return Jwts.builder()
