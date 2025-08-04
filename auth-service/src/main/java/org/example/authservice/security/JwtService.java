@@ -42,6 +42,9 @@ public class JwtService {
 
 
     public String generateAccessToken(String subject, String userId) {
+        checkSubject(subject);
+        checkUserId(userId);
+
         Map<String, Object> claims = Map.of(
                 TOKEN_TYPE, "access_token",
                 USER_ID, userId
@@ -50,6 +53,9 @@ public class JwtService {
     }
 
     public String generateRefreshToken(String subject, String userId) {
+        checkSubject(subject);
+        checkUserId(userId);
+
         Map<String, Object> claims = Map.of(
                 TOKEN_TYPE, "refresh_token",
                 USER_ID, userId
@@ -98,6 +104,18 @@ public class JwtService {
                 .expiration(Date.from(Instant.now().plusSeconds(expiration)))
                 .signWith(privateKey)
                 .compact();
+    }
+
+    private void checkSubject(String subject) {
+        if (subject == null || subject.isEmpty()) {
+            throw new IllegalArgumentException("Subject (email) must not be null or empty");
+        }
+    }
+
+    private void checkUserId(String userId) {
+        if (userId == null || userId.isEmpty()) {
+            throw new IllegalArgumentException("User ID must not be null or empty");
+        }
     }
 
     private boolean isTokenExpired(String token) {
