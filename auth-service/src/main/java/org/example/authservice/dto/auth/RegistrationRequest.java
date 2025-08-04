@@ -36,7 +36,6 @@ public record RegistrationRequest(
         @Pattern(regexp = "^(?i)(male|female|other)$", message = "Gender must be 'male', 'female' or 'other'")
         String gender,
 
-        @NotBlank(message = "Avatar URL must not be empty")
         @Pattern(regexp = "^(https?://).+", message = "Avatar URL must be a valid URL")
         String avatarUrl
 ) {

@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-change-token-type-in-refresh-tokens
+      author: Yaroslav Guz
+      changes:
+        - modifyDataType:
+            tableName: refresh_tokens
+            columnName: token
+            newDataType: TEXT
