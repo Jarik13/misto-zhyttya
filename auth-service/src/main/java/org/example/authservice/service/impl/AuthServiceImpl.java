@@ -5,6 +5,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.authservice.dto.auth.LoginRequest;
 import org.example.authservice.dto.auth.RegistrationRequest;
+import org.example.authservice.dto.error.ErrorCode;
+import org.example.authservice.exception.BusinessException;
 import org.example.authservice.mapper.UserMapper;
 import org.example.authservice.repository.UserRepository;
 import org.example.authservice.security.CookieUtils;
@@ -27,7 +29,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void register(RegistrationRequest request, HttpServletResponse response) {
-
+        checkUserEmail(request.email());
+        checkPasswords(request.password(), request.confirmPassword());
     }
 
     @Override
@@ -43,5 +46,17 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void logout() {
 
+    }
+
+    private void checkUserEmail(String email) {
+        if (userRepository.existsByEmailIgnoreCase(email)) {
+            throw new BusinessException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+    }
+
+    private void checkPasswords(String password, String confirmPassword) {
+        if (password == null || !password.equals(confirmPassword)) {
+            throw new BusinessException(ErrorCode.PASSWORD_MISMATCH);
+        }
     }
 }
