@@ -27,6 +27,7 @@ public enum ErrorCode {
     CATEGORY_ALREADY_EXISTS_FOR_USER("CATEGORY_ALREADY_EXISTS_FOR_USER", "Category already exists for this user", HttpStatus.CONFLICT),
     INVALID_TOKEN("INVALID_TOKEN", "Invalid token", HttpStatus.BAD_REQUEST),
     INVALID_REFRESH_TOKEN("INVALID_REFRESH_TOKEN", "Invalid refresh token", HttpStatus.BAD_REQUEST),
+    UNAUTHORIZED("UNAUTHORIZED", "Access denied. Please log in.", HttpStatus.UNAUTHORIZED),
     ;
 
     private final String code;
