@@ -61,7 +61,11 @@ public class JwtService {
             throw new IllegalArgumentException("Invalid refresh token");
         }
 
-        return null;
+        if (isTokenExpired(refreshToken)) {
+            throw new IllegalArgumentException("Refresh token has expired");
+        }
+
+        return buildToken(claims.getSubject(), claims, accessTokenExpiration);
     }
 
 
