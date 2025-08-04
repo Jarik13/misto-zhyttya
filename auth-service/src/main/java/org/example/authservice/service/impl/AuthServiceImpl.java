@@ -16,6 +16,7 @@ import org.example.authservice.security.JwtService;
 import org.example.authservice.service.AuthService;
 import org.example.authservice.service.RefreshTokenService;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -48,8 +49,20 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public void login(LoginRequest request, HttpServletResponse response) {
+        var authToken = new UsernamePasswordAuthenticationToken(request.email(), request.password());
+        authenticationManager.authenticate(authToken);
 
+        var user = userRepository.findByEmailIgnoreCase(request.email())
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        refreshTokenService.createRefreshToken(user);
+
+        cookieUtils.addJwtCookies(
+                response,
+                jwtService.generateAccessToken(user.getEmail(), user.getId().toString())
+        );
     }
 
     @Override
