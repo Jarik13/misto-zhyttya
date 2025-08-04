@@ -1,5 +1,6 @@
 package org.example.authservice.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,8 @@ import org.example.authservice.service.RefreshTokenService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -42,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
         refreshTokenService.createRefreshToken(user);
 
-        cookieUtils.addJwtCookies(
+        cookieUtils.addAccessTokenCookie(
                 response,
                 jwtService.generateAccessToken(user.getEmail(), user.getId().toString())
         );
@@ -59,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
 
         refreshTokenService.createRefreshToken(user);
 
-        cookieUtils.addJwtCookies(
+        cookieUtils.addAccessTokenCookie(
                 response,
                 jwtService.generateAccessToken(user.getEmail(), user.getId().toString())
         );
@@ -71,8 +74,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void logout() {
-
+    @Transactional
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        refreshTokenService.deleteByUserId(UUID.fromString(jwtService.extractUserId(cookieUtils.getAccessToken(request))));
+        cookieUtils.clearAccessTokenCookie(response);
     }
 
     private void checkUserEmail(String email) {
