@@ -5,6 +5,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class JwtService {
     @Value("${app.security.jwt.access-token-expiration}")
     private Long accessTokenExpiration;
 
+    @Getter
     @Value("${app.security.jwt.refresh-token-expiration}")
     private Long refreshTokenExpiration;
 
