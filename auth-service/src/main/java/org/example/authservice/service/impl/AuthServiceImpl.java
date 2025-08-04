@@ -76,8 +76,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-        refreshTokenService.deleteByUserId(UUID.fromString(jwtService.extractUserId(cookieUtils.getAccessToken(request))));
+        refreshTokenService.deleteByUserId(getUserIdFromRequest(request));
         cookieUtils.clearAccessTokenCookie(response);
+    }
+
+    private UUID getUserIdFromRequest(HttpServletRequest request) {
+        return UUID.fromString(jwtService.extractUserId(cookieUtils.getAccessToken(request)))
     }
 
     private void checkUserEmail(String email) {
