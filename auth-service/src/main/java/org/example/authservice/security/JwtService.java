@@ -1,5 +1,8 @@
 package org.example.authservice.security;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +55,10 @@ public class JwtService {
         return buildToken(subject, claims, refreshTokenExpiration);
     }
 
+    public String refreshAccessToken(String refreshToken) {
+        return null;
+    }
+
 
     private String buildToken(String subject, Map<String, Object> claims, Long expiration) {
         return Jwts.builder()
@@ -61,5 +68,19 @@ public class JwtService {
                 .expiration(Date.from(Instant.now().plusSeconds(expiration)))
                 .signWith(privateKey)
                 .compact();
+    }
+
+    private Claims extractClaims(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(publicKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException ex) {
+            throw new RuntimeException("Token has expired", ex);
+        } catch (JwtException ex) {
+            throw new RuntimeException("Invalid JWT token", ex);
+        }
     }
 }
