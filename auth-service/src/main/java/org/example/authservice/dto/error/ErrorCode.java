@@ -26,6 +26,7 @@ public enum ErrorCode {
     USERNAME_NOT_FOUND("USERNAME_NOT_FOUND", "Cannot find user with the provided username", HttpStatus.NOT_FOUND),
     CATEGORY_ALREADY_EXISTS_FOR_USER("CATEGORY_ALREADY_EXISTS_FOR_USER", "Category already exists for this user", HttpStatus.CONFLICT),
     INVALID_TOKEN("INVALID_TOKEN", "Invalid token", HttpStatus.BAD_REQUEST),
+    INVALID_REFRESH_TOKEN("INVALID_REFRESH_TOKEN", "Invalid refresh token", HttpStatus.BAD_REQUEST),
     ;
 
     private final String code;

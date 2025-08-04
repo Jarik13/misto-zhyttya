@@ -15,7 +15,6 @@ import org.example.authservice.repository.UserRepository;
 import org.example.authservice.security.CookieUtils;
 import org.example.authservice.security.JwtService;
 import org.example.authservice.service.AuthService;
-import org.example.authservice.service.RefreshTokenService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,6 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final CookieUtils cookieUtils;
     private final UserRepository userRepository;
-    private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
 
     @Override
@@ -40,15 +38,13 @@ public class AuthServiceImpl implements AuthService {
         checkPasswords(request.password(), request.confirmPassword());
 
         User user = userMapper.toUser(request);
-        log.debug("Saving user {}", user);
-
         userRepository.save(user);
-        refreshTokenService.createRefreshToken(user);
 
-        cookieUtils.addAccessTokenCookie(
-                response,
-                jwtService.generateAccessToken(user.getEmail(), user.getId().toString())
-        );
+        String accessToken = jwtService.generateAccessToken(user.getEmail(), user.getId().toString());
+        String refreshToken = jwtService.generateRefreshToken(user.getEmail(), user.getId().toString());
+
+        cookieUtils.addAccessTokenCookie(response, accessToken);
+        cookieUtils.addRefreshTokenCookie(response, refreshToken);
     }
 
     @Override
@@ -60,28 +56,42 @@ public class AuthServiceImpl implements AuthService {
         var user = userRepository.findByEmailIgnoreCase(request.email())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        refreshTokenService.createRefreshToken(user);
+        String accessToken = jwtService.generateAccessToken(user.getEmail(), user.getId().toString());
+        String refreshToken = jwtService.generateRefreshToken(user.getEmail(), user.getId().toString());
 
-        cookieUtils.addAccessTokenCookie(
-                response,
-                jwtService.generateAccessToken(user.getEmail(), user.getId().toString())
-        );
+        cookieUtils.addAccessTokenCookie(response, accessToken);
+        cookieUtils.addRefreshTokenCookie(response, refreshToken);
     }
 
     @Override
-    public void refreshAccessToken() {
+    public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = cookieUtils.getRefreshToken(request);
 
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        String userEmail;
+        try {
+            userEmail = jwtService.extractEmail(refreshToken);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        if (!jwtService.isTokenValid(refreshToken, userEmail)) {
+            throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        UUID userId = UUID.fromString(jwtService.extractUserId(refreshToken));
+        String newAccessToken = jwtService.generateAccessToken(userEmail, userId.toString());
+
+        cookieUtils.addAccessTokenCookie(response, newAccessToken);
     }
 
     @Override
-    @Transactional
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-        refreshTokenService.deleteByUserId(getUserIdFromRequest(request));
         cookieUtils.clearAccessTokenCookie(response);
-    }
-
-    private UUID getUserIdFromRequest(HttpServletRequest request) {
-        return UUID.fromString(jwtService.extractUserId(cookieUtils.getAccessToken(request)));
+        cookieUtils.clearRefreshTokenCookie(response);
     }
 
     private void checkUserEmail(String email) {

@@ -10,6 +10,6 @@ import java.util.UUID;
 public interface AuthService {
     void register(RegistrationRequest request, HttpServletResponse response);
     void login(LoginRequest request, HttpServletResponse response);
-    void refreshAccessToken();
+    void refreshAccessToken(HttpServletRequest request, HttpServletResponse response);
     void logout(HttpServletRequest request, HttpServletResponse response);
 }
