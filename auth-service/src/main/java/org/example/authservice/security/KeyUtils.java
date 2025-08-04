@@ -22,6 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class KeyUtils {
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final SecretsManagerClient secretsManagerClient;
 
     @Getter
     private PrivateKey privateKey;
@@ -33,15 +34,12 @@ public class KeyUtils {
     public void loadKeys() {
         final String secretName = "auth-service/keys";
 
-        try (SecretsManagerClient client = SecretsManagerClient.builder()
-                .region(Region.EU_NORTH_1)
-                .build()) {
-
+        try {
             GetSecretValueRequest request = GetSecretValueRequest.builder()
                     .secretId(secretName)
                     .build();
 
-            GetSecretValueResponse response = client.getSecretValue(request);
+            GetSecretValueResponse response = secretsManagerClient.getSecretValue(request);
             String secretString = response.secretString();
 
             Map<String, String> secrets = objectMapper.readValue(secretString, Map.class);
