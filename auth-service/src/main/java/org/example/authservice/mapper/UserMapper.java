@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
     private final PasswordEncoder passwordEncoder;
 
-    User toUser(RegistrationRequest request) {
+    public User toUser(RegistrationRequest request) {
         return User.builder()
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))

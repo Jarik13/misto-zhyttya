@@ -18,7 +18,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
-    public RefreshToken createRefreshToken(User user) {
+    public void createRefreshToken(User user) {
         String token = jwtService.generateRefreshToken(user.getEmail(), user.getId().toString());
 
         RefreshToken refreshToken = RefreshToken.builder()
@@ -27,7 +27,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                 .expiryDate(Instant.now().plusSeconds(jwtService.getRefreshTokenExpiration()))
                 .build();
 
-        return refreshTokenRepository.save(refreshToken);
+        refreshTokenRepository.save(refreshToken);
     }
 
     @Override
