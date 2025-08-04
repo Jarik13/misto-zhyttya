@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-remove-refresh-tokens
+      author: Yaroslav Guz
+      changes:
+        - dropTable:
+            tableName: refresh_tokens
+            cascadeConstraints: true

@@ -7,17 +7,12 @@ import lombok.RequiredArgsConstructor;
 import org.example.authservice.dto.MessageResponse;
 import org.example.authservice.dto.auth.LoginRequest;
 import org.example.authservice.dto.auth.RegistrationRequest;
-import org.example.authservice.model.User;
 import org.example.authservice.service.AuthService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -39,8 +34,16 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse("User logged in successfully"));
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<Void> refreshAccessToken(HttpServletRequest request,
+                                                   HttpServletResponse response) {
+        authService.refreshAccessToken(request, response);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/logout")
-    public ResponseEntity<MessageResponse> logoutUser(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<MessageResponse> logoutUser(HttpServletRequest request,
+                                                      HttpServletResponse response) {
         authService.logout(request, response);
         return ResponseEntity.ok(new MessageResponse("User logged out successfully"));
     }

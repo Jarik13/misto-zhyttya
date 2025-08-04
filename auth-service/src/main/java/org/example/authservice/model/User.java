@@ -36,9 +36,6 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private Role role;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private RefreshToken refreshToken;
-
     @Column(name = "is_enabled")
     private boolean enabled;
 
