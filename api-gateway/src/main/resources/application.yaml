@@ -2,6 +2,18 @@ spring:
   application:
     name: api-gateway
 
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: auth-service-route
+              uri: http://auth-service:4001
+              predicates:
+                - Path=/auth/**
+              filters:
+                - StripPrefix=0
+
 
 server:
   port: 4000
