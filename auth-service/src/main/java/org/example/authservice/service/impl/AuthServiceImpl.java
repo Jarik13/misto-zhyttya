@@ -99,7 +99,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String validateToken(String token) {
-        return "";
+        if (jwtService.isTokenValid(token, jwtService.extractEmail(token))) {
+            return jwtService.extractUserId(token);
+        }
+        throw new BusinessException(ErrorCode.INVALID_TOKEN);
     }
 
     private void checkUserEmail(String email) {
