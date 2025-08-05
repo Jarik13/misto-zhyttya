@@ -13,4 +13,6 @@ public interface AuthService {
     void logout(HttpServletRequest request, HttpServletResponse response);
 
     void changePassword(HttpServletRequest httpRequest, ChangePasswordRequest request);
+
+    String validateToken(String token);
 }

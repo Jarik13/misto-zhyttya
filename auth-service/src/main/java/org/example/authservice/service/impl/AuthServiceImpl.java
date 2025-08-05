@@ -97,6 +97,10 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
     }
 
+    @Override
+    public String validateToken(String token) {
+        return "";
+    }
 
     private void checkUserEmail(String email) {
         if (userRepository.existsByEmailIgnoreCase(email)) {
