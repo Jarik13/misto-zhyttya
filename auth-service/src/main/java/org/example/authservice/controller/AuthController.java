@@ -64,6 +64,7 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse("Password changed successfully"));
     }
 
+    @Operation(summary = "Validate access token")
     @GetMapping("/validate")
     public ResponseEntity<ValidationResponse> validateToken(@CookieValue(value = "access_token", required = false) String token) {
         return token == null ?
