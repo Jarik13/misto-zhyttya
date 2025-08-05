@@ -68,9 +68,14 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = cookieUtils.getRefreshToken(request);
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            log.warn("Refresh token is missing in the request cookies");
+            throw new BusinessException(ErrorCode.REFRESH_TOKEN_MISSED);
+        }
         cookieUtils.addAccessTokenCookie(
                 response,
-                jwtService.refreshAccessToken(cookieUtils.getRefreshToken(request))
+                jwtService.refreshAccessToken(refreshToken)
         );
     }
 

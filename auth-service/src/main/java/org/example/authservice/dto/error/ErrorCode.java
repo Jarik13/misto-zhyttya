@@ -28,6 +28,7 @@ public enum ErrorCode {
     INVALID_TOKEN("INVALID_TOKEN", "Invalid token", HttpStatus.BAD_REQUEST),
     INVALID_REFRESH_TOKEN("INVALID_REFRESH_TOKEN", "Invalid refresh token", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED("UNAUTHORIZED", "Access denied. Please log in.", HttpStatus.UNAUTHORIZED),
+    REFRESH_TOKEN_MISSED("REFRESH_TOKEN_MISSED", "Refresh token is missing in the request cookies", HttpStatus.UNAUTHORIZED)
     ;
 
     private final String code;
