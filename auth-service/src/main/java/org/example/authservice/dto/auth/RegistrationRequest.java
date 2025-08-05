@@ -6,13 +6,9 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
 public record RegistrationRequest(
-        @Schema(description = "User's first name", example = "John")
-        @NotBlank(message = "First name must not be empty")
-        String firstName,
-
-        @Schema(description = "User's last name", example = "Doe")
-        @NotBlank(message = "Last name must not be empty")
-        String lastName,
+        @Schema(description = "Username", example = "john_doe")
+        @NotBlank(message = "Username must not be empty")
+        String username,
 
         @Schema(description = "User's email", example = "john.doe@example.com")
         @NotBlank(message = "Email must not be empty")
@@ -40,10 +36,11 @@ public record RegistrationRequest(
         @Past(message = "Date of birth must be in the past")
         LocalDate dateOfBirth,
 
-        @Schema(description = "Gender: male, female or other", example = "male")
-        @NotBlank(message = "Gender must not be empty")
-        @Pattern(regexp = "^(?i)(male|female|other)$", message = "Gender must be 'male', 'female' or 'other'")
-        String gender,
+        @Schema(description = "Gender ID (0 - male, 1 - female, 2 - other, 3 - not specified)", example = "0")
+        @NotNull(message = "Gender ID must not be null")
+        @Min(value = 0, message = "Gender ID must be at least 0")
+        @Max(value = 3, message = "Gender ID must be at most 3")
+        Long genderId,
 
         @Schema(description = "URL to the user's avatar", example = "https://example.com/avatar.jpg")
         @Pattern(regexp = "^(https?://).+", message = "Avatar URL must be a valid URL")
