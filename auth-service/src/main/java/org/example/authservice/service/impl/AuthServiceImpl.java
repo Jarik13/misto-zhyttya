@@ -68,21 +68,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = cookieUtils.getRefreshToken(request);
-
-        if (refreshToken == null || refreshToken.isEmpty()) {
-            throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
-        }
-
-        String userEmail = extractUserEmailFromToken(refreshToken);
-        if (!jwtService.isTokenValid(refreshToken, userEmail)) {
-            throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
-        }
-
-        UUID userId = UUID.fromString(jwtService.extractUserId(refreshToken));
-        String newAccessToken = jwtService.generateAccessToken(userEmail, userId.toString());
-
-        cookieUtils.addAccessTokenCookie(response, newAccessToken);
+        cookieUtils.addAccessTokenCookie(
+                response,
+                jwtService.refreshAccessToken(cookieUtils.getRefreshToken(request))
+        );
     }
 
     @Override
@@ -127,13 +116,5 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException(ErrorCode.UNAUTHORIZED);
         }
         return UUID.fromString(jwtService.extractUserId(token));
-    }
-
-    private String extractUserEmailFromToken(String token) {
-        try {
-            return jwtService.extractEmail(token);
-        } catch (Exception e) {
-            throw new BusinessException(ErrorCode.INVALID_REFRESH_TOKEN);
-        }
     }
 }
