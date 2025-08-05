@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-alter-users-for-oauth
+      author: Yaroslav Guz
+      changes:
+        - modifyDataType:
+            tableName: users
+            columnName: password
+            newDataType: VARCHAR(255)
+
+        - dropNotNullConstraint:
+            tableName: users
+            columnName: password
+            columnDataType: VARCHAR(255)
+
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: provider
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                  defaultValue: 'LOCAL'
