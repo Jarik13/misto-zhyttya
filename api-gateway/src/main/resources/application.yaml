@@ -10,14 +10,12 @@ spring:
             - id: auth-service-route
               uri: http://auth-service:4001
               predicates:
-                - Path=/auth/**
+                - Path=/auth/**, /oauth2/**, /login/oauth2/**
               filters:
                 - StripPrefix=0
 
-
 server:
   port: 4000
-
 
 auth:
   service:
