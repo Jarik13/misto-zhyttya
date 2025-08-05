@@ -5,3 +5,8 @@ spring:
 
 server:
   port: 4000
+
+
+auth:
+  service:
+    url: ${AUTH_SERVICE_URL}
