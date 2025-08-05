@@ -2,6 +2,7 @@ package org.example.authservice.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.example.authservice.dto.auth.RegistrationRequest;
+import org.example.authservice.model.AuthProvider;
 import org.example.authservice.model.Role;
 import org.example.authservice.model.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +18,7 @@ public class UserMapper {
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
                 .role(Role.USER)
+                .provider(AuthProvider.LOCAL)
                 .enabled(true)
                 .build();
     }
