@@ -8,7 +8,9 @@ import org.example.authservice.dto.MessageResponse;
 import org.example.authservice.dto.auth.ChangePasswordRequest;
 import org.example.authservice.dto.auth.LoginRequest;
 import org.example.authservice.dto.auth.RegistrationRequest;
+import org.example.authservice.dto.auth.ValidationResponse;
 import org.example.authservice.service.AuthService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,5 +62,12 @@ public class AuthController {
                                                           HttpServletRequest httpRequest) {
         authService.changePassword(httpRequest, request);
         return ResponseEntity.ok(new MessageResponse("Password changed successfully"));
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity<ValidationResponse> validateToken(@CookieValue(value = "access_token", required = false) String token) {
+        return token == null ?
+                ResponseEntity.status(HttpStatus.UNAUTHORIZED).build() :
+                ResponseEntity.ok(new ValidationResponse(authService.validateToken(token)));
     }
 }
