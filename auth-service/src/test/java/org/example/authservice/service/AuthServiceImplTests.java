@@ -68,15 +68,14 @@ class AuthServiceImplTests {
     @Test
     void givenValidRegistrationRequest_whenRegister_thenSaveUserAndAddCookies() {
         RegistrationRequest request = new RegistrationRequest(
-                "John",
-                "Doe",
+                "john_doe",
                 "john@example.com",
                 "Password123!",
                 "Password123!",
                 "+380991234567",
                 LocalDate.of(2000, 10, 10),
-                "male",
-                null
+                0L,
+                "https://example.com/avatar.jpg"
         );
 
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -98,14 +97,24 @@ class AuthServiceImplTests {
 
     @Test
     void givenExistingEmail_whenRegister_thenThrowBusinessException() {
-        RegistrationRequest request = mock(RegistrationRequest.class);
-        when(request.email()).thenReturn("john@example.com");
-        when(userRepository.existsByEmailIgnoreCase("john@example.com")).thenReturn(true);
+        RegistrationRequest request = new RegistrationRequest(
+                "john_doe",
+                "john@example.com",
+                "Password123!",
+                "Password123!",
+                "+380991234567",
+                LocalDate.of(2000, 10, 10),
+                1L,
+                null
+        );
+
+        when(userRepository.existsByEmailIgnoreCase(request.email())).thenReturn(true);
 
         HttpServletResponse response = mock(HttpServletResponse.class);
 
         BusinessException ex = assertThrows(BusinessException.class,
                 () -> authService.register(request, response));
+
         assertEquals("EMAIL_ALREADY_EXISTS", ex.getErrorCode().name());
     }
 
@@ -283,14 +292,13 @@ class AuthServiceImplTests {
     @Test
     void givenInvalidEmail_whenValidateRegistrationRequest_thenValidationFails() {
         RegistrationRequest request = new RegistrationRequest(
-                "John",
-                "Doe",
+                "john_doe",
                 "invalid-email",
                 "Password123!",
                 "Password123!",
                 "+380991234567",
                 LocalDate.of(2000, 1, 1),
-                "male",
+                0L,
                 null
         );
 
@@ -302,37 +310,35 @@ class AuthServiceImplTests {
     }
 
     @Test
-    void givenEmptyFirstName_whenValidateRegistrationRequest_thenValidationFails() {
+    void givenEmptyUsername_whenValidateRegistrationRequest_thenValidationFails() {
         RegistrationRequest request = new RegistrationRequest(
                 "",
-                "Doe",
                 "john@example.com",
                 "Password123!",
                 "Password123!",
                 "+380991234567",
                 LocalDate.of(2000, 1, 1),
-                "male",
+                0L,
                 null
         );
 
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
 
         assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("firstName")
+                .anyMatch(v -> v.getPropertyPath().toString().equals("username")
                                && v.getMessage().contains("must not be empty")));
     }
 
     @Test
     void givenPasswordWithoutSpecialCharacter_whenValidateRegistrationRequest_thenValidationFails() {
         RegistrationRequest request = new RegistrationRequest(
-                "John",
-                "Doe",
+                "john_doe",
                 "john@example.com",
                 "Password123",
                 "Password123",
                 "+380991234567",
                 LocalDate.of(2000, 1, 1),
-                "male",
+                0L,
                 null
         );
 
@@ -346,14 +352,13 @@ class AuthServiceImplTests {
     @Test
     void givenNullDateOfBirth_whenValidateRegistrationRequest_thenValidationFails() {
         RegistrationRequest request = new RegistrationRequest(
-                "John",
-                "Doe",
+                "john_doe",
                 "john@example.com",
                 "Password123!",
                 "Password123!",
                 "+380991234567",
                 null,
-                "male",
+                0L,
                 null
         );
 
@@ -365,24 +370,23 @@ class AuthServiceImplTests {
     }
 
     @Test
-    void givenInvalidGender_whenValidateRegistrationRequest_thenValidationFails() {
+    void givenInvalidGenderId_whenValidateRegistrationRequest_thenValidationFails() {
         RegistrationRequest request = new RegistrationRequest(
-                "John",
-                "Doe",
+                "john_doe",
                 "john@example.com",
                 "Password123!",
                 "Password123!",
                 "+380991234567",
                 LocalDate.of(2000, 1, 1),
-                "invalidGender",
+                10L,
                 null
         );
 
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
 
         assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("gender")
-                               && v.getMessage().contains("must be 'male', 'female' or 'other'")));
+                .anyMatch(v -> v.getPropertyPath().toString().equals("genderId")
+                               && v.getMessage().contains("must be at most 3")));
     }
 
     // endregion
