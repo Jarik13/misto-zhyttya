@@ -50,4 +50,9 @@ public class GitHubOAuth2UserInfoProcessor implements OAuth2UserInfoProcessor {
 
         return attributes;
     }
+
+    @Override
+    public String getNameAttributeKey() {
+        return "login";
+    }
 }
