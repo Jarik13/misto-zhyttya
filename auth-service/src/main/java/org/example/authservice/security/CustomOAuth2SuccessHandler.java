@@ -30,6 +30,9 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                                         Authentication authentication) throws IOException, ServletException {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String email = oAuth2User.getAttribute("email");
+        if (email == null) {
+            throw new IllegalArgumentException("Email not found from OAuth2 provider");
+        }
 
         String registrationId = ((OAuth2AuthenticationToken) authentication)
                 .getAuthorizedClientRegistrationId()

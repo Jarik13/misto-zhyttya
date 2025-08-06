@@ -1,0 +1,66 @@
+package org.example.authservice.security;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.*;
+
+@Slf4j
+@Component
+public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    @Override
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        OAuth2User user = super.loadUser(userRequest);
+
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+
+        Map<String, Object> attributes = new HashMap<>(user.getAttributes());
+
+        if ("github".equalsIgnoreCase(registrationId)) {
+            String token = userRequest.getAccessToken().getTokenValue();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(token);
+            headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+
+            HttpEntity<?> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
+                    "https://api.github.com/user/emails",
+                    HttpMethod.GET,
+                    entity,
+                    new ParameterizedTypeReference<>() {}
+            );
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                List<Map<String, Object>> emailList = response.getBody();
+                if (emailList != null) {
+                    for (Map<String, Object> emailObj : emailList) {
+                        boolean primary = Boolean.TRUE.equals(emailObj.get("primary"));
+                        boolean verified = Boolean.TRUE.equals(emailObj.get("verified"));
+                        if (primary && verified) {
+                            attributes.put("email", emailObj.get("email"));
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return new DefaultOAuth2User(
+                user.getAuthorities(),
+                attributes,
+                "login"
+        );
+    }
+}
