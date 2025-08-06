@@ -28,12 +28,25 @@ spring:
               - email
               - profile
             redirect-uri: "http://localhost:4000/login/oauth2/code/google"
+          github:
+            client-id: ${OAUTH2_CLIENT_GITHUB_CLIENT_ID}
+            client-secret: ${OAUTH2_CLIENT_GITHUB_CLIENT_SECRET}
+            scope:
+              - read:user
+              - user:email
+            redirect-uri: "http://localhost:4000/login/oauth2/code/github"
+
         provider:
           google:
             authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
             user-name-attribute: sub
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: id
 
 springdoc:
   api-docs:
