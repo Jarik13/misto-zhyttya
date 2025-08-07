@@ -21,7 +21,6 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
-    private final CookieUtils cookieUtils;
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
@@ -43,7 +42,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         try {
-            final String token = cookieUtils.getAccessToken(request);
+            final String token = authHeader.substring(AUTHORIZATION_PREFIX.length());
             final String email = jwtService.extractEmail(token);
 
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
