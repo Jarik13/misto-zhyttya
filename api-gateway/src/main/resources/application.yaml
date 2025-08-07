@@ -14,6 +14,14 @@ spring:
               filters:
                 - StripPrefix=0
 
+            - id: user-profile-service-route
+              uri: http://user-profile-service:4002
+              predicates:
+                - Path=/api/v1/**
+              filters:
+                - StripPrefix=0
+                - JwtValidation
+
 server:
   port: 4000
 
