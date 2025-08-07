@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.authservice.dto.auth.AuthResponse;
 import org.example.authservice.dto.auth.ChangePasswordRequest;
 import org.example.authservice.dto.auth.LoginRequest;
 import org.example.authservice.dto.auth.RegistrationRequest;
@@ -36,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public void register(RegistrationRequest request, HttpServletResponse response) {
+    public AuthResponse register(RegistrationRequest request, HttpServletResponse response) {
         checkUserEmail(request.email());
         checkPasswords(request.password(), request.confirmPassword());
 
@@ -46,13 +47,14 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtService.generateAccessToken(user.getEmail(), user.getId().toString());
         String refreshToken = jwtService.generateRefreshToken(user.getEmail(), user.getId().toString());
 
-        cookieUtils.addAccessTokenCookie(response, accessToken);
         cookieUtils.addRefreshTokenCookie(response, refreshToken);
+
+        return new AuthResponse("User registered successfully", accessToken);
     }
 
     @Override
     @Transactional
-    public void login(LoginRequest request, HttpServletResponse response) {
+    public AuthResponse login(LoginRequest request, HttpServletResponse response) {
         var authToken = new UsernamePasswordAuthenticationToken(request.email(), request.password());
         authenticationManager.authenticate(authToken);
 
@@ -62,26 +64,24 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtService.generateAccessToken(user.getEmail(), user.getId().toString());
         String refreshToken = jwtService.generateRefreshToken(user.getEmail(), user.getId().toString());
 
-        cookieUtils.addAccessTokenCookie(response, accessToken);
         cookieUtils.addRefreshTokenCookie(response, refreshToken);
+
+        return new AuthResponse("User logged in successfully", accessToken);
     }
 
     @Override
-    public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    public AuthResponse refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = cookieUtils.getRefreshToken(request);
         if (refreshToken == null || refreshToken.isEmpty()) {
             log.warn("Refresh token is missing in the request cookies");
             throw new BusinessException(ErrorCode.REFRESH_TOKEN_MISSED);
         }
-        cookieUtils.addAccessTokenCookie(
-                response,
-                jwtService.refreshAccessToken(refreshToken)
-        );
+        return new AuthResponse("Token refreshed successfully",
+                jwtService.refreshAccessToken(refreshToken));
     }
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-        cookieUtils.clearAccessTokenCookie(response);
         cookieUtils.clearRefreshTokenCookie(response);
     }
 
@@ -104,8 +104,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String validateToken(String token) {
-        if (jwtService.isTokenValid(token, jwtService.extractEmail(token))) {
-            return jwtService.extractUserId(token);
+        String actualToken = token != null && token.startsWith("Bearer ") ?
+                token.substring(7) : token;
+
+        if (actualToken != null && jwtService.isTokenValid(actualToken, jwtService.extractEmail(actualToken))) {
+            return jwtService.extractUserId(actualToken);
         }
         throw new BusinessException(ErrorCode.INVALID_TOKEN);
     }
@@ -123,10 +126,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private UUID extractUserIdFromAccessToken(HttpServletRequest request) {
-        String token = cookieUtils.getAccessToken(request);
-        if (token == null || token.isEmpty()) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
-        return UUID.fromString(jwtService.extractUserId(token));
+        return jwtService.extractUserId(request);
     }
 }

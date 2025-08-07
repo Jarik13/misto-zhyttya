@@ -5,10 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.authservice.dto.MessageResponse;
-import org.example.authservice.dto.auth.ChangePasswordRequest;
-import org.example.authservice.dto.auth.LoginRequest;
-import org.example.authservice.dto.auth.RegistrationRequest;
-import org.example.authservice.dto.auth.ValidationResponse;
+import org.example.authservice.dto.auth.*;
 import org.example.authservice.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,26 +23,23 @@ public class AuthController {
 
     @Operation(summary = "Register a new user")
     @PostMapping("/register")
-    public ResponseEntity<MessageResponse> registerUser(@Valid @RequestBody RegistrationRequest request,
-                                                        HttpServletResponse response) {
-        authService.register(request, response);
-        return ResponseEntity.ok(new MessageResponse("User registered successfully"));
+    public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody RegistrationRequest request,
+                                                     HttpServletResponse response) {
+        return ResponseEntity.ok(authService.register(request, response));
     }
 
     @Operation(summary = "Log in a user")
     @PostMapping("/login")
-    public ResponseEntity<MessageResponse> loginUser(@Valid @RequestBody LoginRequest request,
+    public ResponseEntity<AuthResponse> loginUser(@Valid @RequestBody LoginRequest request,
                                                      HttpServletResponse response) {
-        authService.login(request, response);
-        return ResponseEntity.ok(new MessageResponse("User logged in successfully"));
+        return ResponseEntity.ok(authService.login(request, response));
     }
 
     @Operation(summary = "Refresh access token using refresh token")
     @PostMapping("/refresh")
-    public ResponseEntity<Void> refreshAccessToken(HttpServletRequest request,
+    public ResponseEntity<AuthResponse> refreshAccessToken(HttpServletRequest request,
                                                    HttpServletResponse response) {
-        authService.refreshAccessToken(request, response);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(authService.refreshAccessToken(request, response));
     }
 
     @Operation(summary = "Log out a user and invalidate tokens")
@@ -66,7 +60,7 @@ public class AuthController {
 
     @Operation(summary = "Validate access token")
     @GetMapping("/validate")
-    public ResponseEntity<ValidationResponse> validateToken(@CookieValue(value = "access_token", required = false) String token) {
+    public ResponseEntity<ValidationResponse> validateToken(@RequestHeader(value = "Authorization", required = false) String token) {
         return token == null ?
                 ResponseEntity.status(HttpStatus.UNAUTHORIZED).build() :
                 ResponseEntity.ok(new ValidationResponse(authService.validateToken(token)));

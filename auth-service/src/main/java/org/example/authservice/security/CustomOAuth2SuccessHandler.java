@@ -59,11 +59,6 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
         UUID userId = appUser.getId();
 
-        cookieUtils.addAccessTokenCookie(
-                response,
-                jwtService.generateAccessToken(email, userId.toString())
-        );
-
         cookieUtils.addRefreshTokenCookie(
                 response,
                 jwtService.generateRefreshToken(email, userId.toString())
