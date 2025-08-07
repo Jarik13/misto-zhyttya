@@ -50,5 +50,37 @@ services:
       - "5432:5432"
     restart: unless-stopped
 
+  ### User Profile Service
+  user-profile-service:
+    container_name: user-profile-service
+    build:
+      context: ./user-profile-service
+      dockerfile: Dockerfile
+    ports:
+      - "4002:4002"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://user-profile-db:5432/user-profile-service-db
+      SPRING_DATASOURCE_USERNAME: username
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+    depends_on:
+      - user-profile-db
+
+  ### PostgreSQL for User Profile Service
+  user-profile-db:
+    image: postgres:latest
+    container_name: user-profile-db
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: user-profile-service-db
+      PGDATA: /data/postgres
+    volumes:
+      - user-profile_service_data:/data/postgres
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
+
 volumes:
   auth_service_data:
+  user-profile_service_data:
