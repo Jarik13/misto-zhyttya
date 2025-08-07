@@ -66,7 +66,7 @@ class AuthServiceImplTests {
     // region: Registration Tests
 
     @Test
-    void givenValidRegistrationRequest_whenRegister_thenSaveUserAndAddCookies() {
+    void givenValidRegistrationRequest_whenRegister_thenSaveUserAndAddRefreshTokenCookie() {
         RegistrationRequest request = new RegistrationRequest(
                 "john_doe",
                 "john@example.com",
@@ -88,11 +88,13 @@ class AuthServiceImplTests {
         when(jwtService.generateAccessToken(any(), any())).thenReturn("access-token");
         when(jwtService.generateRefreshToken(any(), any())).thenReturn("refresh-token");
 
-        authService.register(request, response);
+        var authResponse = authService.register(request, response);
 
         verify(userRepository).save(user);
-        verify(cookieUtils).addAccessTokenCookie(response, "access-token");
         verify(cookieUtils).addRefreshTokenCookie(response, "refresh-token");
+
+        assertEquals("User registered successfully", authResponse.message());
+        assertEquals("access-token", authResponse.accessToken());
     }
 
     @Test
@@ -124,7 +126,7 @@ class AuthServiceImplTests {
     // region: Login Tests
 
     @Test
-    void givenValidLoginRequestAndExistingUser_whenLogin_thenAuthenticateAndAddCookies() {
+    void givenValidLoginRequestAndExistingUser_whenLogin_thenAuthenticateAndAddRefreshTokenCookie() {
         LoginRequest request = new LoginRequest("john@example.com", "Password123!");
         HttpServletResponse response = mock(HttpServletResponse.class);
 
@@ -140,11 +142,13 @@ class AuthServiceImplTests {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(mock(org.springframework.security.core.Authentication.class));
 
-        authService.login(request, response);
+        var authResponse = authService.login(request, response);
 
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(cookieUtils).addAccessTokenCookie(response, "access-token");
         verify(cookieUtils).addRefreshTokenCookie(response, "refresh-token");
+
+        assertEquals("User logged in successfully", authResponse.message());
+        assertEquals("access-token", authResponse.accessToken());
     }
 
     @Test
@@ -165,16 +169,29 @@ class AuthServiceImplTests {
     // region: Refresh Token Tests
 
     @Test
-    void givenValidRefreshToken_whenRefreshAccessToken_thenAddNewAccessTokenCookie() {
+    void givenValidRefreshToken_whenRefreshAccessToken_thenReturnNewAccessToken() {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
 
         when(cookieUtils.getRefreshToken(request)).thenReturn("refresh-token");
         when(jwtService.refreshAccessToken("refresh-token")).thenReturn("new-access-token");
 
-        authService.refreshAccessToken(request, response);
+        var authResponse = authService.refreshAccessToken(request, response);
 
-        verify(cookieUtils).addAccessTokenCookie(response, "new-access-token");
+        assertEquals("Token refreshed successfully", authResponse.message());
+        assertEquals("new-access-token", authResponse.accessToken());
+    }
+
+    @Test
+    void givenMissingRefreshToken_whenRefreshAccessToken_thenThrowBusinessException() {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+
+        when(cookieUtils.getRefreshToken(request)).thenReturn(null);
+
+        BusinessException ex = assertThrows(BusinessException.class,
+                () -> authService.refreshAccessToken(request, response));
+        assertEquals("REFRESH_TOKEN_MISSED", ex.getErrorCode().name());
     }
 
     // endregion
@@ -183,13 +200,12 @@ class AuthServiceImplTests {
     // region: Logout Tests
 
     @Test
-    void whenLogout_thenClearAccessAndRefreshTokenCookies() {
+    void whenLogout_thenClearRefreshTokenCookie() {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
 
         authService.logout(request, response);
 
-        verify(cookieUtils).clearAccessTokenCookie(response);
         verify(cookieUtils).clearRefreshTokenCookie(response);
     }
 
@@ -213,8 +229,7 @@ class AuthServiceImplTests {
         user.setId(userId);
         user.setPassword("encodedOldPassword");
 
-        when(cookieUtils.getAccessToken(request)).thenReturn("access-token");
-        when(jwtService.extractUserId("access-token")).thenReturn(userId.toString());
+        when(jwtService.extractUserId(request)).thenReturn(userId);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("OldPassword123!", "encodedOldPassword")).thenReturn(true);
         when(passwordEncoder.encode("NewPassword123!")).thenReturn("encodedNewPassword");
@@ -250,8 +265,7 @@ class AuthServiceImplTests {
 
         UUID userId = UUID.randomUUID();
 
-        when(cookieUtils.getAccessToken(request)).thenReturn("access-token");
-        when(jwtService.extractUserId("access-token")).thenReturn(userId.toString());
+        when(jwtService.extractUserId(request)).thenReturn(userId);
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         BusinessException ex = assertThrows(BusinessException.class,
@@ -274,8 +288,7 @@ class AuthServiceImplTests {
         user.setId(userId);
         user.setPassword("encodedOldPassword");
 
-        when(cookieUtils.getAccessToken(request)).thenReturn("access-token");
-        when(jwtService.extractUserId("access-token")).thenReturn(userId.toString());
+        when(jwtService.extractUserId(request)).thenReturn(userId);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("WrongOldPassword", "encodedOldPassword")).thenReturn(false);
 

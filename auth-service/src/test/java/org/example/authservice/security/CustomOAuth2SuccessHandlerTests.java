@@ -85,7 +85,6 @@ class CustomOAuth2SuccessHandlerTests {
                 user.getRole() == Role.USER
         ));
 
-        verify(cookieUtils).addAccessTokenCookie(response, "access-token");
         verify(cookieUtils).addRefreshTokenCookie(response, "refresh-token");
 
         verify(mockRedirectStrategy).sendRedirect(request, response, "http://localhost:5173");
@@ -118,7 +117,6 @@ class CustomOAuth2SuccessHandlerTests {
         successHandler.onAuthenticationSuccess(request, response, authentication);
 
         verify(userRepository, never()).save(any());
-        verify(cookieUtils).addAccessTokenCookie(response, "access-token");
         verify(cookieUtils).addRefreshTokenCookie(response, "refresh-token");
 
         verify(mockRedirectStrategy).sendRedirect(request, response, "http://localhost:5173");
@@ -163,7 +161,6 @@ class CustomOAuth2SuccessHandlerTests {
 
         successHandler.onAuthenticationSuccess(request, response, authentication);
 
-        verify(cookieUtils).addAccessTokenCookie(response, "access-token");
         verify(cookieUtils).addRefreshTokenCookie(response, "refresh-token");
         verify(mockRedirectStrategy).sendRedirect(request, response, "http://localhost:5173");
     }
