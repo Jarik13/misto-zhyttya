@@ -36,7 +36,7 @@ public record RegistrationRequest(
         @Past(message = "Date of birth must be in the past")
         LocalDate dateOfBirth,
 
-        @Schema(description = "Gender ID (0 - male, 1 - female, 2 - other, 3 - not specified)", example = "0")
+        @Schema(description = "Gender ID (0 - male, 1 - female, 2 - transgender, 3 - not specified)", example = "0")
         @NotNull(message = "Gender ID must not be null")
         @Min(value = 0, message = "Gender ID must be at least 0")
         @Max(value = 3, message = "Gender ID must be at most 3")
