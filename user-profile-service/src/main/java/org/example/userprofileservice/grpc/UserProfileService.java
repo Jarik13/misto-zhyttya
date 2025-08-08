@@ -1,6 +1,7 @@
 package org.example.userprofileservice.grpc;
 
 import io.grpc.stub.StreamObserver;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -20,6 +21,7 @@ public class UserProfileService extends UserProfileServiceGrpc.UserProfileServic
     private final UserProfileRepository userProfileRepository;
 
     @Override
+    @Transactional
     public void createUserProfile(CreateUserProfileRequest request,
                                   StreamObserver<CreateUserProfileResponse> responseObserver) {
         log.info("createUserProfile received request: {}", request);
