@@ -37,6 +37,12 @@ public class UserProfileService extends UserProfileServiceGrpc.UserProfileServic
     @Override
     public void checkPhoneNumber(CheckPhoneNumberRequest request,
                                  StreamObserver<CheckPhoneNumberResponse> responseObserver) {
-        super.checkPhoneNumber(request, responseObserver);
+        log.info("checkPhoneNumber received request: {}", request);
+
+        CheckPhoneNumberResponse response = CheckPhoneNumberResponse.newBuilder()
+                .setIsUnique(userProfileRepository.existsByPhoneNumber(request.getPhoneNumber()))
+                .build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 }
