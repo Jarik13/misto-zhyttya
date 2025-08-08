@@ -3,3 +3,5 @@ databaseChangeLog:
       file: "db/changelog/changes/001-create-profiles.yaml"
   - include:
       file: "db/changelog/changes/002-modify-user-id-length.yaml"
+  - include:
+      file: "db/changelog/changes/003-modify-phone-number-unique-and-date-of-birth-nullable.yaml"
