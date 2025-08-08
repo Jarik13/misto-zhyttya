@@ -11,6 +11,7 @@ import org.example.authservice.dto.auth.LoginRequest;
 import org.example.authservice.dto.auth.RegistrationRequest;
 import org.example.authservice.dto.error.ErrorCode;
 import org.example.authservice.exception.BusinessException;
+import org.example.authservice.grpc.UserProfileServiceGrpcClient;
 import org.example.authservice.mapper.UserMapper;
 import org.example.authservice.model.User;
 import org.example.authservice.repository.UserRepository;
@@ -21,6 +22,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import user.profile.CheckPhoneNumberRequest;
 
 import java.util.UUID;
 
@@ -34,12 +36,14 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final UserProfileServiceGrpcClient userProfileServiceGrpcClient;
 
     @Override
     @Transactional
     public AuthResponse register(RegistrationRequest request, HttpServletResponse response) {
         checkUserEmail(request.email());
         checkPasswords(request.password(), request.confirmPassword());
+        checkPhoneNumber(request.phoneNumber());
 
         User user = userMapper.toUser(request);
         userRepository.save(user);
@@ -122,6 +126,20 @@ public class AuthServiceImpl implements AuthService {
     private void checkPasswords(String password, String confirmPassword) {
         if (password == null || !password.equals(confirmPassword)) {
             throw new BusinessException(ErrorCode.PASSWORD_MISMATCH);
+        }
+    }
+
+    private void checkPhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
+            throw new BusinessException(ErrorCode.PHONE_IS_EMPTY);
+        }
+
+        boolean isUnique = userProfileServiceGrpcClient.checkPhoneNumber(
+                        CheckPhoneNumberRequest.newBuilder().setPhoneNumber(phoneNumber).build())
+                .getIsUnique();
+
+        if (!isUnique) {
+            throw new BusinessException(ErrorCode.PHONE_ALREADY_EXISTS);
         }
     }
 
