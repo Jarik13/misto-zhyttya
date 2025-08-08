@@ -18,4 +18,18 @@ public class DefaultOAuth2UserInfoProcessor implements OAuth2UserInfoProcessor {
     public String getNameAttributeKey() {
         return "id";
     }
+
+    @Override
+    public Map<String, Object> extractAttributes(OAuth2User oAuth2User) {
+        Map<String, Object> attrs = new HashMap<>();
+        Map<String, Object> orig = oAuth2User.getAttributes();
+
+        attrs.put("username", orig.getOrDefault("username", ""));
+        attrs.put("phoneNumber", "");
+        attrs.put("dateOfBirth", null);
+        attrs.put("genderId", 3L);
+        attrs.put("avatarUrl", "");
+
+        return attrs;
+    }
 }

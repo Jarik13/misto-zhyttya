@@ -3,10 +3,12 @@ package org.example.authservice.security;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.authservice.grpc.UserProfileServiceGrpcClient;
 import org.example.authservice.model.AuthProvider;
 import org.example.authservice.model.Role;
 import org.example.authservice.model.User;
 import org.example.authservice.repository.UserRepository;
+import org.example.authservice.security.provider.OAuth2UserInfoProcessorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -32,6 +34,12 @@ class CustomOAuth2SuccessHandlerTests {
     private JwtService jwtService;
 
     @Mock
+    private OAuth2UserInfoProcessorFactory processorFactory;
+
+    @Mock
+    private UserProfileServiceGrpcClient userProfileServiceGrpcClient;
+
+    @Mock
     private HttpServletRequest request;
 
     @Mock
@@ -49,7 +57,7 @@ class CustomOAuth2SuccessHandlerTests {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        successHandler = new CustomOAuth2SuccessHandler(cookieUtils, userRepository, jwtService);
+        successHandler = new CustomOAuth2SuccessHandler(cookieUtils, userRepository, jwtService, processorFactory, userProfileServiceGrpcClient);
     }
 
     @Test

@@ -55,4 +55,18 @@ public class GitHubOAuth2UserInfoProcessor implements OAuth2UserInfoProcessor {
     public String getNameAttributeKey() {
         return "login";
     }
+
+    @Override
+    public Map<String, Object> extractAttributes(OAuth2User oAuth2User) {
+        Map<String, Object> attrs = new HashMap<>();
+        Map<String, Object> orig = oAuth2User.getAttributes();
+
+        attrs.put("username", orig.getOrDefault("login", ""));
+        attrs.put("phoneNumber", "");
+        attrs.put("dateOfBirth", null);
+        attrs.put("genderId", 3L);
+        attrs.put("avatarUrl", orig.getOrDefault("avatar_url", ""));
+
+        return attrs;
+    }
 }
