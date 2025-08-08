@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "user.profile";
+
+service UserProfileService {
+  rpc CreateUserProfile (CreateUserProfileRequest) returns (CreateUserProfileResponse);
+  rpc CheckPhoneNumber (CheckPhoneNumberRequest) returns (CheckPhoneNumberResponse);
+}
+
+message CreateUserProfileRequest {
+  string userId = 1;
+  string username = 2;
+  string phoneNumber = 3;
+  string dateOfBirth = 4;
+  int64 genderId = 5;
+  string avatarUrl = 6;
+}
+
+message CreateUserProfileResponse {
+  string profileId = 1;
+}
+
+message CheckPhoneNumberRequest {
+  string phoneNumber = 1;
+}
+
+message CheckPhoneNumberResponse {
+  bool isUnique = 1;
+}
