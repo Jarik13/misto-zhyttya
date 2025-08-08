@@ -1,8 +1,12 @@
 package org.example.userprofileservice.grpc;
 
 import io.grpc.stub.StreamObserver;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
+import org.example.userprofileservice.mapper.UserProfileMapper;
+import org.example.userprofileservice.model.Profile;
+import org.example.userprofileservice.repository.UserProfileRepository;
 import user.profile.UserProfileServiceGrpc;
 import user.profile.CreateUserProfileRequest;
 import user.profile.CreateUserProfileResponse;
@@ -11,11 +15,23 @@ import user.profile.CheckPhoneNumberResponse;
 
 @Slf4j
 @GrpcService
+@RequiredArgsConstructor
 public class UserProfileService extends UserProfileServiceGrpc.UserProfileServiceImplBase {
+    private final UserProfileRepository userProfileRepository;
+
     @Override
     public void createUserProfile(CreateUserProfileRequest request,
                                   StreamObserver<CreateUserProfileResponse> responseObserver) {
-        super.createUserProfile(request, responseObserver);
+        log.info("createUserProfile received request: {}", request);
+
+        Profile profile = userProfileRepository.save(UserProfileMapper.toUserProfile(request));
+
+        CreateUserProfileResponse response = CreateUserProfileResponse.newBuilder()
+                .setProfileId(String.valueOf(profile.getId()))
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 
     @Override
