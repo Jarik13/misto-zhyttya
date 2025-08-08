@@ -54,6 +54,11 @@ springdoc:
   swagger-ui:
     enabled: true
 
+grpc:
+  server:
+    security:
+      enabled: false
+
 server:
   port: 4001
 
@@ -66,5 +71,5 @@ app:
 user-profile:
   service:
     address: ${USER_PROFILE_SERVICE_ADDRESS}
-    port: ${USER_PROFILE_SERVICE_PORT}
+    port: ${USER_PROFILE_SERVICE_GRPC_PORT}
 

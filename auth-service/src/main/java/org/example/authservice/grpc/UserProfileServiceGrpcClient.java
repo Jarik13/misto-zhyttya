@@ -13,8 +13,8 @@ public class UserProfileServiceGrpcClient {
     private final UserProfileServiceGrpc.UserProfileServiceBlockingStub blockingStub;
 
     public UserProfileServiceGrpcClient(
-            @Value("${user-profile.service.address:localhost}") String serverAddress,
-            @Value("${user-profile.service.port:4002}") int serverPort
+            @Value("${user-profile.service.address}") String serverAddress,
+            @Value("${user-profile.service.port}") int serverPort
     ) {
         log.info("Connecting to user profile service at {}:{}", serverAddress, serverPort);
 

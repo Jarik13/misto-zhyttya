@@ -10,6 +10,7 @@ import org.example.authservice.dto.auth.ChangePasswordRequest;
 import org.example.authservice.dto.auth.LoginRequest;
 import org.example.authservice.dto.auth.RegistrationRequest;
 import org.example.authservice.exception.BusinessException;
+import org.example.authservice.grpc.UserProfileServiceGrpcClient;
 import org.example.authservice.mapper.UserMapper;
 import org.example.authservice.model.User;
 import org.example.authservice.repository.UserRepository;
@@ -37,6 +38,7 @@ class AuthServiceImplTests {
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
     private AuthenticationManager authenticationManager;
+    private UserProfileServiceGrpcClient userProfileServiceGrpcClient;
 
     private AuthServiceImpl authService;
     private Validator validator;
@@ -49,6 +51,7 @@ class AuthServiceImplTests {
         userRepository = mock(UserRepository.class);
         passwordEncoder = mock(PasswordEncoder.class);
         authenticationManager = mock(AuthenticationManager.class);
+        userProfileServiceGrpcClient = mock(UserProfileServiceGrpcClient.class);
 
         authService = new AuthServiceImpl(
                 userMapper,
@@ -56,7 +59,8 @@ class AuthServiceImplTests {
                 cookieUtils,
                 userRepository,
                 passwordEncoder,
-                authenticationManager
+                authenticationManager,
+                userProfileServiceGrpcClient
         );
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();

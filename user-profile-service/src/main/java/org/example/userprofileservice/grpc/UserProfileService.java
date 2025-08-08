@@ -42,8 +42,9 @@ public class UserProfileService extends UserProfileServiceGrpc.UserProfileServic
         log.info("checkPhoneNumber received request: {}", request);
 
         CheckPhoneNumberResponse response = CheckPhoneNumberResponse.newBuilder()
-                .setIsUnique(userProfileRepository.existsByPhoneNumber(request.getPhoneNumber()))
+                .setIsUnique(!userProfileRepository.existsByPhoneNumber(request.getPhoneNumber()))
                 .build();
+
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
