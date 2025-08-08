@@ -1,0 +1,24 @@
+package org.example.userprofileservice.mapper;
+
+import org.example.userprofileservice.model.Gender;
+import user.profile.CreateUserProfileRequest;
+import org.example.userprofileservice.model.Profile;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+public class UserProfileMapper {
+    public static Profile toUserProfile(CreateUserProfileRequest request) {
+        return Profile.builder()
+                .username(request.getUsername())
+                .phoneNumber(request.getPhoneNumber())
+                .dateOfBirth(LocalDate.parse(
+                        request.getDateOfBirth(),
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                ))
+                .gender(Gender.fromId(request.getGenderId()))
+                .avatarUrl(request.getAvatarUrl())
+                .userId(request.getUserId())
+                .build();
+    }
+}
