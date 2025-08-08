@@ -5,9 +5,7 @@ import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import user.profile.CreateUserProfileRequest;
-import user.profile.CreateUserProfileResponse;
-import user.profile.UserProfileServiceGrpc;
+import user.profile.*;
 
 @Slf4j
 @Service
@@ -29,6 +27,12 @@ public class UserProfileServiceGrpcClient {
     public CreateUserProfileResponse createUserProfile(CreateUserProfileRequest request) {
         CreateUserProfileResponse response = blockingStub.createUserProfile(request);
         log.info("Created user profile: {}", response);
+        return response;
+    }
+
+    public CheckPhoneNumberResponse checkPhoneNumber(CheckPhoneNumberRequest request) {
+        CheckPhoneNumberResponse response = blockingStub.checkPhoneNumber(request);
+        log.info("Checked phone number: {}", response);
         return response;
     }
 }
