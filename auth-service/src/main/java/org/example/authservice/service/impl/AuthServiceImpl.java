@@ -23,7 +23,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import user.profile.CheckPhoneNumberRequest;
+import user.profile.CreateUserProfileRequest;
 
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Slf4j
@@ -47,6 +49,17 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userMapper.toUser(request);
         userRepository.save(user);
+
+        CreateUserProfileRequest userProfileRequest = CreateUserProfileRequest.newBuilder()
+                .setUsername(request.username())
+                .setPhoneNumber(request.phoneNumber())
+                .setDateOfBirth(request.dateOfBirth().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                .setGenderId(request.genderId())
+                .setAvatarUrl(request.avatarUrl())
+                .setUserId(String.valueOf(user.getId()))
+                .build();
+
+        userProfileServiceGrpcClient.createUserProfile(userProfileRequest);
 
         String accessToken = jwtService.generateAccessToken(user.getEmail(), user.getId().toString());
         String refreshToken = jwtService.generateRefreshToken(user.getEmail(), user.getId().toString());
