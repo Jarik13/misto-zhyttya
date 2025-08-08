@@ -1,5 +1,7 @@
 package org.example.authservice.config;
 
+import net.devh.boot.grpc.server.security.authentication.BasicGrpcAuthenticationReader;
+import net.devh.boot.grpc.server.security.authentication.GrpcAuthenticationReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,5 +19,10 @@ public class BeansConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public GrpcAuthenticationReader grpcAuthenticationReader(){
+        return new BasicGrpcAuthenticationReader();
     }
 }
