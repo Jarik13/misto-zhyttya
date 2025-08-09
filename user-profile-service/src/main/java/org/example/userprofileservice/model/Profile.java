@@ -24,7 +24,7 @@ public class Profile {
     @Column(name = "username", nullable = false)
     private String username;
 
-    @Column(name = "phone_number", nullable = false)
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     @Column(name = "date_of_birth")
