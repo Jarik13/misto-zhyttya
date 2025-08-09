@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.authservice.dto.MessageResponse;
 import org.example.authservice.dto.auth.*;
 import org.example.authservice.service.AuthService;
 import org.springframework.http.HttpStatus;
@@ -44,18 +43,18 @@ public class AuthController {
 
     @Operation(summary = "Log out a user and invalidate tokens")
     @PostMapping("/logout")
-    public ResponseEntity<MessageResponse> logoutUser(HttpServletRequest request,
+    public ResponseEntity<Void> logoutUser(HttpServletRequest request,
                                                       HttpServletResponse response) {
         authService.logout(request, response);
-        return ResponseEntity.ok(new MessageResponse("User logged out successfully"));
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Change user password")
     @PostMapping("/change-password")
-    public ResponseEntity<MessageResponse> changePassword(@Valid @RequestBody ChangePasswordRequest request,
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody ChangePasswordRequest request,
                                                           HttpServletRequest httpRequest) {
         authService.changePassword(httpRequest, request);
-        return ResponseEntity.ok(new MessageResponse("Password changed successfully"));
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Validate access token")

@@ -97,7 +97,6 @@ class AuthServiceImplTests {
         verify(userRepository).save(user);
         verify(cookieUtils).addRefreshTokenCookie(response, "refresh-token");
 
-        assertEquals("User registered successfully", authResponse.message());
         assertEquals("access-token", authResponse.accessToken());
     }
 
@@ -151,7 +150,6 @@ class AuthServiceImplTests {
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(cookieUtils).addRefreshTokenCookie(response, "refresh-token");
 
-        assertEquals("User logged in successfully", authResponse.message());
         assertEquals("access-token", authResponse.accessToken());
     }
 
@@ -182,7 +180,6 @@ class AuthServiceImplTests {
 
         var authResponse = authService.refreshAccessToken(request, response);
 
-        assertEquals("Token refreshed successfully", authResponse.message());
         assertEquals("new-access-token", authResponse.accessToken());
     }
 

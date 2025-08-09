@@ -67,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
 
         cookieUtils.addRefreshTokenCookie(response, refreshToken);
 
-        return new AuthResponse("User registered successfully", accessToken);
+        return new AuthResponse(accessToken);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
 
         cookieUtils.addRefreshTokenCookie(response, refreshToken);
 
-        return new AuthResponse("User logged in successfully", accessToken);
+        return new AuthResponse(accessToken);
     }
 
     @Override
@@ -94,8 +94,7 @@ public class AuthServiceImpl implements AuthService {
             log.warn("Refresh token is missing in the request cookies");
             throw new BusinessException(ErrorCode.REFRESH_TOKEN_MISSED);
         }
-        return new AuthResponse("Token refreshed successfully",
-                jwtService.refreshAccessToken(refreshToken));
+        return new AuthResponse(jwtService.refreshAccessToken(refreshToken));
     }
 
     @Override
