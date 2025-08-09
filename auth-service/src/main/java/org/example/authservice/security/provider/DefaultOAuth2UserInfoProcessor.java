@@ -26,7 +26,7 @@ public class DefaultOAuth2UserInfoProcessor implements OAuth2UserInfoProcessor {
 
         attrs.put("username", orig.getOrDefault("username", ""));
         attrs.put("phoneNumber", "");
-        attrs.put("dateOfBirth", null);
+        attrs.put("dateOfBirth", "");
         attrs.put("genderId", 3L);
         attrs.put("avatarUrl", "");
 
