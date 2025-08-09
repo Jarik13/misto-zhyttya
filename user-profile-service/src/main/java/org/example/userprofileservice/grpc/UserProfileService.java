@@ -26,7 +26,8 @@ public class UserProfileService extends UserProfileServiceGrpc.UserProfileServic
                                   StreamObserver<CreateUserProfileResponse> responseObserver) {
         log.info("createUserProfile received request: {}", request);
 
-        Profile profile = userProfileRepository.save(UserProfileMapper.toUserProfile(request));
+        Profile profile = userProfileRepository.findByUserId(request.getUserId())
+                .orElseGet(() -> userProfileRepository.save(UserProfileMapper.toUserProfile(request)));
 
         CreateUserProfileResponse response = CreateUserProfileResponse.newBuilder()
                 .setProfileId(String.valueOf(profile.getId()))
