@@ -80,8 +80,7 @@ class AuthServiceImplTests {
                 "Password123!",
                 "+380991234567",
                 LocalDate.of(2000, 10, 10),
-                0L,
-                "https://example.com/avatar.jpg"
+                0L
         );
 
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -114,8 +113,7 @@ class AuthServiceImplTests {
                 "Password123!",
                 "+380991234567",
                 LocalDate.of(2000, 10, 10),
-                1L,
-                null
+                1L
         );
 
         when(userRepository.existsByEmailIgnoreCase(request.email())).thenReturn(true);
@@ -317,8 +315,7 @@ class AuthServiceImplTests {
                 "Password123!",
                 "+380991234567",
                 LocalDate.of(2000, 1, 1),
-                0L,
-                null
+                0L
         );
 
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
@@ -337,8 +334,7 @@ class AuthServiceImplTests {
                 "Password123!",
                 "+380991234567",
                 LocalDate.of(2000, 1, 1),
-                0L,
-                null
+                0L
         );
 
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
@@ -357,8 +353,7 @@ class AuthServiceImplTests {
                 "Password123",
                 "+380991234567",
                 LocalDate.of(2000, 1, 1),
-                0L,
-                null
+                0L
         );
 
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
@@ -377,8 +372,7 @@ class AuthServiceImplTests {
                 "Password123!",
                 "+380991234567",
                 null,
-                0L,
-                null
+                0L
         );
 
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
@@ -397,8 +391,7 @@ class AuthServiceImplTests {
                 "Password123!",
                 "+380991234567",
                 LocalDate.of(2000, 1, 1),
-                10L,
-                null
+                10L
         );
 
         Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
