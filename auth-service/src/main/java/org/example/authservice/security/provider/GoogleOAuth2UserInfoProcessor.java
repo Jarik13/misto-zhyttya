@@ -30,7 +30,7 @@ public class GoogleOAuth2UserInfoProcessor implements OAuth2UserInfoProcessor {
         attrs.put("phoneNumber", "");
         attrs.put("dateOfBirth", "");
         attrs.put("genderId", Gender.OTHER.getId());
-        attrs.put("avatarUrl", orig.getOrDefault("picture", ""));
+        attrs.put("avatarKey", orig.getOrDefault("picture", ""));
 
         return attrs;
     }

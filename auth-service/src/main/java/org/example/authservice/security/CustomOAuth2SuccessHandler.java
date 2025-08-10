@@ -56,7 +56,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String phoneNumber = (String) profileAttrs.getOrDefault("phoneNumber", "");
         String dateOfBirth = (String) profileAttrs.getOrDefault("dateOfBirth", "");
         Long genderId = profileAttrs.get("genderId") != null ? Long.parseLong(profileAttrs.get("genderId").toString()) : Gender.OTHER.getId();
-        String avatarUrl = (String) profileAttrs.getOrDefault("avatarUrl", "");
+        String avatarKey = (String) profileAttrs.getOrDefault("avatarKey", "");
 
         var appUser = userRepository.findByEmailIgnoreCase(email)
                 .orElseGet(() -> userRepository.save(
@@ -78,7 +78,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                     .setPhoneNumber(phoneNumber)
                     .setDateOfBirth(dateOfBirth)
                     .setGenderId(genderId)
-                    .setAvatarUrl(avatarUrl)
+                    .setAvatarKey(avatarKey)
                     .build();
 
             userProfileServiceGrpcClient.createUserProfile(profileRequest);

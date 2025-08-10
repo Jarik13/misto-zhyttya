@@ -14,7 +14,7 @@ message CreateUserProfileRequest {
   string phoneNumber = 3;
   string dateOfBirth = 4;
   int64 genderId = 5;
-  string avatarUrl = 6;
+  string avatarKey = 6;
 }
 
 message CreateUserProfileResponse {

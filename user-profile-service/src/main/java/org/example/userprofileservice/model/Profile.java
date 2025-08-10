@@ -34,8 +34,8 @@ public class Profile {
     @Column(name = "gender", nullable = false)
     private Gender gender;
 
-    @Column(name = "avatar_url")
-    private String avatarUrl;
+    @Column(name = "avatar_key")
+    private String avatarKey;
 
     @Column(name = "user_id", nullable = false, unique = true)
     private String userId;

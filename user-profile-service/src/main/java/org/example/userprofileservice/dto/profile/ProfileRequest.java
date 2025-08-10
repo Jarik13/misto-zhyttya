@@ -26,8 +26,7 @@ public record ProfileRequest(
         @Max(value = 3, message = "Gender ID must be at most 3")
         Long genderId,
 
-        @Schema(description = "URL to the user's avatar", example = "https://example.com/avatar.jpg")
-        @Pattern(regexp = "^(https?://).+", message = "Avatar URL must be a valid URL")
-        String avatarUrl
+        @Schema(description = "URL to the user's avatar", example = "123e4567-e89b-12d3-a456-426614174000-avatar.png")
+        String avatarKey
 ) {
 }
