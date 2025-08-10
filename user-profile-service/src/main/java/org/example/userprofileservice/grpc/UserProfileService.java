@@ -6,8 +6,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
+import org.example.userprofileservice.dto.profile.ProfileRequest;
 import org.example.userprofileservice.dto.profile.ProfileResponse;
 import org.example.userprofileservice.mapper.UserProfileMapper;
+import org.example.userprofileservice.model.Gender;
 import org.example.userprofileservice.model.Profile;
 import org.example.userprofileservice.repository.UserProfileRepository;
 import user.profile.UserProfileServiceGrpc;
@@ -57,5 +59,20 @@ public class UserProfileService extends UserProfileServiceGrpc.UserProfileServic
                 .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " not found"));
 
         return UserProfileMapper.toUserProfileResponse(profile);
+    }
+
+    @Transactional
+    public void updateUserProfile(String userId, ProfileRequest request) {
+        log.info("updateUserProfile received request: {}", request);
+
+        Profile profile = userProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " not found"));
+
+        profile.setUsername(request.username());
+        profile.setPhoneNumber(request.phoneNumber());
+        profile.setDateOfBirth(request.dateOfBirth());
+        profile.setGender(Gender.fromId(request.genderId()));
+        profile.setAvatarUrl(request.avatarUrl());
+        userProfileRepository.save(profile);
     }
 }
