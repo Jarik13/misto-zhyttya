@@ -6,6 +6,8 @@ option java_package = "user.profile";
 service UserProfileService {
   rpc CreateUserProfile (CreateUserProfileRequest) returns (CreateUserProfileResponse);
   rpc CheckPhoneNumber (CheckPhoneNumberRequest) returns (CheckPhoneNumberResponse);
+
+  rpc GetUserProfileInfo (GetUserProfileInfoRequest) returns (GetUserProfileInfoResponse);
 }
 
 message CreateUserProfileRequest {
@@ -18,7 +20,8 @@ message CreateUserProfileRequest {
 }
 
 message CreateUserProfileResponse {
-  string profileId = 1;
+  string username = 1;
+  string avatarKey = 3;
 }
 
 message CheckPhoneNumberRequest {
@@ -27,4 +30,13 @@ message CheckPhoneNumberRequest {
 
 message CheckPhoneNumberResponse {
   bool isUnique = 1;
+}
+
+message GetUserProfileInfoRequest {
+  string userId = 1;
+}
+
+message GetUserProfileInfoResponse {
+  string username = 1;
+  string avatarKey = 3;
 }

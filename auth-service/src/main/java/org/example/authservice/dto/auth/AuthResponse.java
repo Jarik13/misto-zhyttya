@@ -7,6 +7,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record AuthResponse(
         @JsonProperty("access_token")
         @Schema(description = "JWT токен доступу", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
-        String accessToken
+        String accessToken,
+
+        @Schema(description = "Роль користувача", example = "USER")
+        String role,
+
+        @Schema(description = "Профіль користувача")
+        Profile profile
 ) {
+        @Schema(description = "Дані профілю користувача")
+        public record Profile(
+                @Schema(description = "Ім'я користувача", example = "john_doe")
+                String username,
+
+                @Schema(description = "Інформація про аватарку користувача")
+                String avatarKey
+        ) {}
 }
