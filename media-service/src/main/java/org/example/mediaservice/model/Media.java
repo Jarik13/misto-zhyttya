@@ -27,8 +27,8 @@ public class Media {
     @Field(name = "content_type")
     private String contentType;
 
-    @Field(name = "url")
-    private String url;
+    @Field(name = "key")
+    private String key;
 
     @Field(name = "size")
     private long size;

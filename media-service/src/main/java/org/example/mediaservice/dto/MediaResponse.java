@@ -1,6 +1,7 @@
 package org.example.mediaservice.dto;
 
 public record MediaResponse(
-        String url
+        String key,
+        String presignedUrl
 ) {
 }

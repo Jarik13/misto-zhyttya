@@ -42,20 +42,20 @@ public class MediaServiceImpl implements MediaService {
         Media media = Media.builder()
                 .filename(multipartFile.getOriginalFilename())
                 .contentType(multipartFile.getContentType())
-                .url(key)
+                .key(key)
                 .size(multipartFile.getSize())
                 .build();
 
         mediaRepository.save(media);
 
-        return getPresignedUrl(media.getUrl());
+        return getMediaWithPresignedUrl(media.getKey());
     }
 
     @Override
-    public MediaResponse getPresignedUrl(String url) {
-        Media media = mediaRepository.findByUrl(url)
-                .orElseThrow(() -> new RuntimeException("Media not found with url: " + url));
+    public MediaResponse getMediaWithPresignedUrl(String key) {
+        Media media = mediaRepository.findByKey(key)
+                .orElseThrow(() -> new RuntimeException("Media not found with key: " + key));
 
-        return new MediaResponse(s3PresignedService.generatePresignedUrl(media.getUrl()));
+        return new MediaResponse(key, s3PresignedService.generatePresignedUrl(media.getKey()));
     }
 }
