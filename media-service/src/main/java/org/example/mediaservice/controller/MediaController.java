@@ -6,6 +6,7 @@ import org.example.mediaservice.service.MediaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +19,7 @@ public class MediaController {
     private final MediaService mediaService;
 
     @PostMapping("/upload")
-    public ResponseEntity<MediaResponse> uploadMedia(MultipartFile multipartFile) throws IOException {
-        return ResponseEntity.ok(mediaService.uploadMedia(multipartFile));
+    public ResponseEntity<MediaResponse> uploadMedia(@RequestParam(value = "mediaFile") MultipartFile mediaFile) throws IOException {
+        return ResponseEntity.ok(mediaService.uploadMedia(mediaFile));
     }
 }
