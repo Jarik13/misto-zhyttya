@@ -2,12 +2,12 @@ package org.example.userprofileservice.dto.gender;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Gender representation with numeric value and human-readable label")
+@Schema(description = "Подання статі з числовим значенням та зрозумілою назвою")
 public record GenderResponse(
-        @Schema(description = "Numeric value representing gender enum ordinal", example = "0")
+        @Schema(description = "Числове значення, що відповідає порядковому номеру статі", example = "0")
         Long value,
 
-        @Schema(description = "Human-readable gender label", example = "Male")
+        @Schema(description = "Зрозуміла людиною назва статі", example = "Чоловік")
         String label
 ) {
 }
