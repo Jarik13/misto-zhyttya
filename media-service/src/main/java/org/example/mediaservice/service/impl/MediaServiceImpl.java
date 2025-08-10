@@ -1,7 +1,9 @@
 package org.example.mediaservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.mediaservice.dto.MediaResponse;
+import org.example.mediaservice.dto.error.ErrorCode;
+import org.example.mediaservice.dto.media.MediaResponse;
+import org.example.mediaservice.exception.BusinessException;
 import org.example.mediaservice.model.Media;
 import org.example.mediaservice.repository.MediaRepository;
 import org.example.mediaservice.service.MediaService;
@@ -56,7 +58,7 @@ public class MediaServiceImpl implements MediaService {
     @Override
     public MediaResponse getMediaWithPresignedUrl(String key) {
         Media media = mediaRepository.findByKey(key)
-                .orElseThrow(() -> new RuntimeException("Media not found with key: " + key));
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Media not found with key: " + key));
 
         return new MediaResponse(key, s3PresignedService.generatePresignedUrl(media.getKey()));
     }
