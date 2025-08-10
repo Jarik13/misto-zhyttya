@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-rename-avatar-url-to-avatar-key
+      author: Yaroslav Guz
+      changes:
+        - renameColumn:
+            tableName: profiles
+            newColumnName: avatar_key
+            oldColumnName: avatar_url
+            columnDataType: TEXT

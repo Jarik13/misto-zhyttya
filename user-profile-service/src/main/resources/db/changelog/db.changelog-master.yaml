@@ -7,3 +7,5 @@ databaseChangeLog:
       file: "db/changelog/changes/003-modify-phone-number-and-date-of-birth-nullable.yaml"
   - include:
       file: "db/changelog/changes/004-make-and-phone-nullable-and-non-unique.yaml"
+  - include:
+      file: "db/changelog/changes/005-rename-avatar-url-to-avatar-key.yaml"
