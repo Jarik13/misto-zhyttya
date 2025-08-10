@@ -15,9 +15,9 @@ import java.io.IOException;
 public class MediaController {
     private final MediaService mediaService;
 
-    @GetMapping
-    public ResponseEntity<MediaResponse> getMedia(@RequestParam("mediaId") String mediaId) throws IOException {
-        return ResponseEntity.ok(mediaService.getPresignedUrl(mediaId));
+    @GetMapping("/{id}")
+    public ResponseEntity<MediaResponse> getMedia(@PathVariable String id) throws IOException {
+        return ResponseEntity.ok(mediaService.getPresignedUrl(id));
     }
 
     @PostMapping("/upload")
