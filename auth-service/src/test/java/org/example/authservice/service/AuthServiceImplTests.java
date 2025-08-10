@@ -22,6 +22,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import user.profile.CheckPhoneNumberRequest;
+import user.profile.CheckPhoneNumberResponse;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -91,6 +93,9 @@ class AuthServiceImplTests {
         when(userMapper.toUser(request)).thenReturn(user);
         when(jwtService.generateAccessToken(any(), any())).thenReturn("access-token");
         when(jwtService.generateRefreshToken(any(), any())).thenReturn("refresh-token");
+
+        when(userProfileServiceGrpcClient.checkPhoneNumber(any(CheckPhoneNumberRequest.class)))
+                .thenReturn(CheckPhoneNumberResponse.newBuilder().setIsUnique(true).build());
 
         var authResponse = authService.register(request, response);
 
