@@ -5,8 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.userprofileservice.dto.error.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.example.userprofileservice.dto.error.ErrorCode.INTERNAL_EXCEPTION;
 import static org.example.userprofileservice.dto.error.ErrorCode.RESOURCE_NOT_FOUND;
@@ -14,6 +18,26 @@ import static org.example.userprofileservice.dto.error.ErrorCode.RESOURCE_NOT_FO
 @Slf4j
 @RestControllerAdvice
 public class ApplicationExceptionHandler {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException exp) {
+        List<ErrorResponse.ValidationError> errors = new ArrayList<>();
+
+        exp.getBindingResult().getFieldErrors().forEach(error -> errors
+                .add(ErrorResponse.ValidationError.builder()
+                        .field(error.getField())
+                        .code(error.getCode())
+                        .message(error.getDefaultMessage())
+                        .build()));
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code("VALIDATION_FAILED")
+                .message("Validation failed for one or more fields")
+                .validationErrors(errors)
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException exception) {
         log.warn("Entity not found: {}", exception.getMessage());
