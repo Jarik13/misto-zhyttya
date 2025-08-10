@@ -13,3 +13,9 @@ spring:
 
 server:
   port: 4003
+
+aws:
+  s3:
+    bucket-name: ${AWS_BUCKET_NAME}
+    access-key: ${AWS_ACCESS_KEY_ID}
+    secret-key: ${AWS_SECRET_ACCESS_KEY}
