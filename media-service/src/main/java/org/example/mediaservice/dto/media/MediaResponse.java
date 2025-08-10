@@ -1,4 +1,4 @@
-package org.example.mediaservice.dto;
+package org.example.mediaservice.dto.media;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

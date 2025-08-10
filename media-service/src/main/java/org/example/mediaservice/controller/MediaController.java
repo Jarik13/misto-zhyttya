@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import lombok.RequiredArgsConstructor;
-import org.example.mediaservice.dto.MediaResponse;
+import org.example.mediaservice.dto.media.MediaResponse;
 import org.example.mediaservice.service.MediaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
