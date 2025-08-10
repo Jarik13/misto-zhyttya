@@ -12,11 +12,7 @@ import org.example.userprofileservice.mapper.UserProfileMapper;
 import org.example.userprofileservice.model.Gender;
 import org.example.userprofileservice.model.Profile;
 import org.example.userprofileservice.repository.UserProfileRepository;
-import user.profile.UserProfileServiceGrpc;
-import user.profile.CreateUserProfileRequest;
-import user.profile.CreateUserProfileResponse;
-import user.profile.CheckPhoneNumberRequest;
-import user.profile.CheckPhoneNumberResponse;
+import user.profile.*;
 
 @Slf4j
 @GrpcService
@@ -34,7 +30,8 @@ public class UserProfileService extends UserProfileServiceGrpc.UserProfileServic
                 .orElseGet(() -> userProfileRepository.save(UserProfileMapper.toUserProfile(request)));
 
         CreateUserProfileResponse response = CreateUserProfileResponse.newBuilder()
-                .setProfileId(String.valueOf(profile.getId()))
+                .setUsername(profile.getUsername())
+                .setAvatarKey(profile.getAvatarKey())
                 .build();
 
         responseObserver.onNext(response);
@@ -48,6 +45,22 @@ public class UserProfileService extends UserProfileServiceGrpc.UserProfileServic
 
         CheckPhoneNumberResponse response = CheckPhoneNumberResponse.newBuilder()
                 .setIsUnique(!userProfileRepository.existsByPhoneNumber(request.getPhoneNumber()))
+                .build();
+
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getUserProfileInfo(GetUserProfileInfoRequest request,
+                                   StreamObserver<GetUserProfileInfoResponse> responseObserver) {
+        log.info("getUserProfileInfo received request: {}", request);
+
+        ProfileResponse profile = findUserProfile(request.getUserId());
+
+        GetUserProfileInfoResponse response = GetUserProfileInfoResponse.newBuilder()
+                .setUsername(profile.username())
+                .setAvatarKey(profile.avatarKey())
                 .build();
 
         responseObserver.onNext(response);

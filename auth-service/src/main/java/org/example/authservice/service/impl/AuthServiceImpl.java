@@ -22,8 +22,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import user.profile.CheckPhoneNumberRequest;
-import user.profile.CreateUserProfileRequest;
+import user.profile.*;
 
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -59,14 +58,9 @@ public class AuthServiceImpl implements AuthService {
                 .setUserId(String.valueOf(user.getId()))
                 .build();
 
-        userProfileServiceGrpcClient.createUserProfile(userProfileRequest);
+        CreateUserProfileResponse profileResponse = userProfileServiceGrpcClient.createUserProfile(userProfileRequest);
 
-        String accessToken = jwtService.generateAccessToken(user.getEmail(), user.getId().toString());
-        String refreshToken = jwtService.generateRefreshToken(user.getEmail(), user.getId().toString());
-
-        cookieUtils.addRefreshTokenCookie(response, refreshToken);
-
-        return new AuthResponse(accessToken);
+        return getAuthResponse(response, user, profileResponse.getUsername(), profileResponse.getAvatarKey());
     }
 
     @Override
@@ -78,12 +72,25 @@ public class AuthServiceImpl implements AuthService {
         var user = userRepository.findByEmailIgnoreCase(request.email())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
+        GetUserProfileInfoRequest profileRequest = GetUserProfileInfoRequest.newBuilder()
+                .setUserId(String.valueOf(user.getId()))
+                .build();
+        GetUserProfileInfoResponse profileResponse = userProfileServiceGrpcClient.getUserProfileInfo(profileRequest);
+
+        return getAuthResponse(response, user, profileResponse.getUsername(), profileResponse.getAvatarKey());
+    }
+
+    private AuthResponse getAuthResponse(HttpServletResponse response, User user, String username, String avatarKey) {
         String accessToken = jwtService.generateAccessToken(user.getEmail(), user.getId().toString());
         String refreshToken = jwtService.generateRefreshToken(user.getEmail(), user.getId().toString());
 
         cookieUtils.addRefreshTokenCookie(response, refreshToken);
 
-        return new AuthResponse(accessToken);
+        return new AuthResponse(
+                accessToken,
+                user.getRole().name(),
+                new AuthResponse.Profile(username, avatarKey)
+        );
     }
 
     @Override
@@ -93,7 +100,7 @@ public class AuthServiceImpl implements AuthService {
             log.warn("Refresh token is missing in the request cookies");
             throw new BusinessException(ErrorCode.REFRESH_TOKEN_MISSED);
         }
-        return new AuthResponse(jwtService.refreshAccessToken(refreshToken));
+        return null;
     }
 
     @Override

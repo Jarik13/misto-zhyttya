@@ -24,14 +24,21 @@ public class UserProfileServiceGrpcClient {
         blockingStub = UserProfileServiceGrpc.newBlockingStub(channel);
     }
 
-    public void createUserProfile(CreateUserProfileRequest request) {
+    public CreateUserProfileResponse createUserProfile(CreateUserProfileRequest request) {
         CreateUserProfileResponse response = blockingStub.createUserProfile(request);
         log.info("Created user profile: {}", response);
+        return response;
     }
 
     public CheckPhoneNumberResponse checkPhoneNumber(CheckPhoneNumberRequest request) {
         CheckPhoneNumberResponse response = blockingStub.checkPhoneNumber(request);
         log.info("Checked phone number: {}", response);
+        return response;
+    }
+
+    public GetUserProfileInfoResponse getUserProfileInfo(GetUserProfileInfoRequest request) {
+        GetUserProfileInfoResponse response = blockingStub.getUserProfileInfo(request);
+        log.info("Get user profile info: {}", response);
         return response;
     }
 }
