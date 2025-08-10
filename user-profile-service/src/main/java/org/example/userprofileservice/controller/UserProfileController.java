@@ -3,14 +3,13 @@ package org.example.userprofileservice.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.userprofileservice.dto.profile.ProfileRequest;
 import org.example.userprofileservice.dto.profile.ProfileResponse;
 import org.example.userprofileservice.grpc.UserProfileService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "User Profiles", description = "Endpoints for retrieving and managing user profiles")
 @RestController
@@ -29,5 +28,12 @@ public class UserProfileController {
             @RequestHeader("X-User-Id") String userId
     ) {
         return ResponseEntity.ok(userProfileService.findUserProfile(userId));
+    }
+
+    @PutMapping
+    public ResponseEntity<Void> updateUserProfile(@RequestHeader("X-User-Id") String userId,
+                                                  @Valid @RequestBody ProfileRequest request) {
+        userProfileService.updateUserProfile(userId, request);
+        return ResponseEntity.noContent().build();
     }
 }
