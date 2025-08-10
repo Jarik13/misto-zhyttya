@@ -1,6 +1,7 @@
 package org.example.authservice.security.provider;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.authservice.dto.gender.Gender;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -64,7 +65,7 @@ public class GitHubOAuth2UserInfoProcessor implements OAuth2UserInfoProcessor {
         attrs.put("username", orig.getOrDefault("login", ""));
         attrs.put("phoneNumber", "");
         attrs.put("dateOfBirth", "");
-        attrs.put("genderId", 3L);
+        attrs.put("genderId", Gender.OTHER.getId());
         attrs.put("avatarUrl", orig.getOrDefault("avatar_url", ""));
 
         return attrs;

@@ -1,5 +1,6 @@
 package org.example.authservice.security.provider;
 
+import org.example.authservice.dto.gender.Gender;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
@@ -28,7 +29,7 @@ public class GoogleOAuth2UserInfoProcessor implements OAuth2UserInfoProcessor {
         attrs.put("username", orig.getOrDefault("name", ""));
         attrs.put("phoneNumber", "");
         attrs.put("dateOfBirth", "");
-        attrs.put("genderId", 3L);
+        attrs.put("genderId", Gender.OTHER.getId());
         attrs.put("avatarUrl", orig.getOrDefault("picture", ""));
 
         return attrs;

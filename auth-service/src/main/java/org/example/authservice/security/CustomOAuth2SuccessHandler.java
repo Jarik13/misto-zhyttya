@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.authservice.dto.gender.Gender;
 import org.example.authservice.grpc.UserProfileServiceGrpcClient;
 import org.example.authservice.model.AuthProvider;
 import org.example.authservice.model.Role;
@@ -54,7 +55,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String username = (String) profileAttrs.getOrDefault("username", email.substring(0, email.indexOf("@")));
         String phoneNumber = (String) profileAttrs.getOrDefault("phoneNumber", "");
         String dateOfBirth = (String) profileAttrs.getOrDefault("dateOfBirth", "");
-        Long genderId = profileAttrs.get("genderId") != null ? Long.parseLong(profileAttrs.get("genderId").toString()) : 3L;
+        Long genderId = profileAttrs.get("genderId") != null ? Long.parseLong(profileAttrs.get("genderId").toString()) : Gender.OTHER.getId();
         String avatarUrl = (String) profileAttrs.getOrDefault("avatarUrl", "");
 
         var appUser = userRepository.findByEmailIgnoreCase(email)
