@@ -52,10 +52,10 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public String getPresignedUrl(String mediaId) {
+    public MediaResponse getPresignedUrl(String mediaId) {
         Media media = mediaRepository.findById(mediaId)
                 .orElseThrow(() -> new RuntimeException("Media not found with id: " + mediaId));
 
-        return s3PresignedService.generatePresignedUrl(media.getUrl());
+        return new MediaResponse(s3PresignedService.generatePresignedUrl(media.getUrl()));
     }
 }
