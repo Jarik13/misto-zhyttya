@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Tag(name = "Gender API", description = "Operations related to genders")
+@Tag(name = "API статей", description = "Операції, пов'язані зі статтю користувача")
 @RestController
 @RequestMapping("/api/v1/genders")
 public class GenderController {
-    @Operation(summary = "Get all genders", description = "Returns a list of all available gender options")
+    @Operation(summary = "Отримати всі статі", description = "Повертає список усіх доступних варіантів статі")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved gender list"),
-            @ApiResponse(responseCode = "500", description = "Internal server error")
+            @ApiResponse(responseCode = "200", description = "Список статей успішно отримано"),
+            @ApiResponse(responseCode = "500", description = "Внутрішня помилка сервера")
     })
     @GetMapping
     public ResponseEntity<List<GenderResponse>> getGenders() {

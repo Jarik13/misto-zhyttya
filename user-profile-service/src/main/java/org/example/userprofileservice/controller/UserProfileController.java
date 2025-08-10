@@ -11,7 +11,7 @@ import org.example.userprofileservice.grpc.UserProfileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "User Profiles", description = "Endpoints for retrieving and managing user profiles")
+@Tag(name = "Профілі користувачів", description = "Ендпоїнти для отримання та керування профілями користувачів")
 @RestController
 @RequestMapping("/api/v1/profiles")
 @RequiredArgsConstructor
@@ -19,24 +19,24 @@ public class UserProfileController {
     private final UserProfileService userProfileService;
 
     @Operation(
-            summary = "Get the current user's profile",
-            description = "Returns detailed profile information for the currently authenticated user."
+            summary = "Отримати профіль поточного користувача",
+            description = "Повертає детальну інформацію профілю для автентифікованого користувача."
     )
     @GetMapping("/me")
     public ResponseEntity<ProfileResponse> getMyProfile(
-            @Parameter(description = "Unique identifier of the authenticated user", example = "550e8400-e29b-41d4-a716-446655440000")
+            @Parameter(description = "Унікальний ідентифікатор автентифікованого користувача", example = "550e8400-e29b-41d4-a716-446655440000")
             @RequestHeader("X-User-Id") String userId
     ) {
         return ResponseEntity.ok(userProfileService.findUserProfile(userId));
     }
 
     @Operation(
-            summary = "Update the current user's profile",
-            description = "Performs full update of the user profile. All fields are required."
+            summary = "Оновити профіль поточного користувача",
+            description = "Виконує повне оновлення профілю користувача. Всі поля обов'язкові."
     )
     @PutMapping
     public ResponseEntity<Void> updateUserProfile(
-            @Parameter(description = "Unique identifier of the authenticated user", example = "550e8400-e29b-41d4-a716-446655440000")
+            @Parameter(description = "Унікальний ідентифікатор автентифікованого користувача", example = "550e8400-e29b-41d4-a716-446655440000")
             @RequestHeader("X-User-Id") String userId,
             @Valid @RequestBody ProfileRequest request
     ) {

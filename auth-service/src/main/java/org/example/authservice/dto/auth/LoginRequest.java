@@ -6,14 +6,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record LoginRequest(
-        @Schema(description = "User email", example = "user@example.com")
-        @NotBlank(message = "Email must not be empty")
-        @Email(message = "Email should be valid")
+        @Schema(description = "Електронна пошта користувача", example = "user@example.com")
+        @NotBlank(message = "Електронна пошта не повинна бути порожньою")
+        @Email(message = "Електронна пошта повинна бути валідною")
         String email,
 
-        @Schema(description = "User password", example = "Password123!")
-        @NotBlank(message = "Password must not be empty")
-        @Size(min = 6, message = "Password must be at least 6 characters")
+        @Schema(description = "Пароль користувача", example = "Password123!")
+        @NotBlank(message = "Пароль не повинен бути порожнім")
+        @Size(min = 6, message = "Пароль повинен містити щонайменше 6 символів")
         String password
 ) {
 }

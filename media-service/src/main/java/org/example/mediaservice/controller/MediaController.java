@@ -19,35 +19,35 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/v1/media")
 @RequiredArgsConstructor
-@Tag(name = "Media", description = "Operations related to media upload and retrieval")
+@Tag(name = "Медіа", description = "Операції, пов'язані з завантаженням і отриманням медіа файлів")
 public class MediaController {
     private final MediaService mediaService;
 
-    @Operation(summary = "Get presigned URL for media by key",
-            description = "Returns the media's presigned URL using the media key",
+    @Operation(summary = "Отримати presigned URL за ключем медіа",
+            description = "Повертає presigned URL для доступу до медіа файлу за ключем",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Presigned URL successfully retrieved",
+                    @ApiResponse(responseCode = "200", description = "Presigned URL успішно отримано",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MediaResponse.class))),
-                    @ApiResponse(responseCode = "404", description = "Media not found", content = @Content)
+                    @ApiResponse(responseCode = "404", description = "Медіа файл не знайдено", content = @Content)
             })
     @GetMapping
     public ResponseEntity<MediaResponse> getMedia(
-            @Parameter(description = "Key of the media file", required = true, example = "123e4567-e89b-12d3-a456-426614174000-avatar.png")
+            @Parameter(description = "Ключ медіа файлу", required = true, example = "123e4567-e89b-12d3-a456-426614174000-avatar.png")
             @RequestParam String key
     ) throws IOException {
         return ResponseEntity.ok(mediaService.getMediaWithPresignedUrl(key));
     }
 
-    @Operation(summary = "Upload a media file",
-            description = "Uploads a media file and returns its key and presigned URL",
+    @Operation(summary = "Завантажити медіа файл",
+            description = "Завантажує медіа файл та повертає його ключ і presigned URL",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Media successfully uploaded",
+                    @ApiResponse(responseCode = "200", description = "Медіа файл успішно завантажено",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = MediaResponse.class))),
-                    @ApiResponse(responseCode = "400", description = "Invalid file input", content = @Content)
+                    @ApiResponse(responseCode = "400", description = "Невірний вхідний файл", content = @Content)
             })
     @PostMapping("/upload")
     public ResponseEntity<MediaResponse> uploadMedia(
-            @Parameter(description = "Media file to upload", required = true)
+            @Parameter(description = "Файл медіа для завантаження", required = true)
             @RequestParam(value = "mediaFile") MultipartFile mediaFile
     ) throws IOException {
         return ResponseEntity.ok(mediaService.uploadMedia(mediaFile));
