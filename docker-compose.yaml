@@ -11,6 +11,7 @@ services:
       AUTH_SERVICE_URL: http://auth-service:4001
     depends_on:
       - auth-service
+      - media-service
 
   ### Auth Service
   auth-service:
@@ -85,6 +86,39 @@ services:
       - "5433:5432"
     restart: unless-stopped
 
+  ### Media Service
+  media-service:
+    container_name: media-service
+    build:
+      context: ./media-service
+      dockerfile: Dockerfile
+    ports:
+      - "4003:4003"
+    environment:
+      SPRING_DATA_MONGODB_HOST: media-db
+      SPRING_DATA_MONGODB_PORT: 27017
+      SPRING_DATA_MONGODB_DATABASE: media-service-db
+      SPRING_DATA_MONGODB_USERNAME: root
+      SPRING_DATA_MONGODB_PASSWORD: secret
+      SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
+    depends_on:
+      - media-db
+
+  ### MongoDB for Media Service
+  media-db:
+    image: mongo:6.0
+    container_name: media-db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_DATABASE: media-service-db
+    volumes:
+      - media_db_data:/data/db
+    ports:
+      - "27017:27017"
+    restart: unless-stopped
+
 volumes:
   auth_service_data:
   user-profile_service_data:
+  media_db_data:
