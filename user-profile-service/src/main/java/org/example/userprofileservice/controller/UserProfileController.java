@@ -30,9 +30,16 @@ public class UserProfileController {
         return ResponseEntity.ok(userProfileService.findUserProfile(userId));
     }
 
+    @Operation(
+            summary = "Update the current user's profile",
+            description = "Performs full update of the user profile. All fields are required."
+    )
     @PutMapping
-    public ResponseEntity<Void> updateUserProfile(@RequestHeader("X-User-Id") String userId,
-                                                  @Valid @RequestBody ProfileRequest request) {
+    public ResponseEntity<Void> updateUserProfile(
+            @Parameter(description = "Unique identifier of the authenticated user", example = "550e8400-e29b-41d4-a716-446655440000")
+            @RequestHeader("X-User-Id") String userId,
+            @Valid @RequestBody ProfileRequest request
+    ) {
         userProfileService.updateUserProfile(userId, request);
         return ResponseEntity.noContent().build();
     }
