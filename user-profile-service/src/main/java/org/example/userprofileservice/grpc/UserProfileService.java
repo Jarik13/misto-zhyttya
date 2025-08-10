@@ -1,6 +1,7 @@
 package org.example.userprofileservice.grpc;
 
 import io.grpc.stub.StreamObserver;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,5 +50,12 @@ public class UserProfileService extends UserProfileServiceGrpc.UserProfileServic
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
+    }
+
+    public ProfileResponse findUserProfile(String userId) {
+        Profile profile = userProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " not found"));
+
+        return UserProfileMapper.toUserProfileResponse(profile);
     }
 }
