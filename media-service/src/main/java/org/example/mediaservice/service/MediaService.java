@@ -7,5 +7,5 @@ import java.io.IOException;
 
 public interface MediaService {
     MediaResponse uploadMedia(MultipartFile multipartFile) throws IOException;
-    String getPresignedUrl(String mediaId);
+    MediaResponse getPresignedUrl(String mediaId);
 }
