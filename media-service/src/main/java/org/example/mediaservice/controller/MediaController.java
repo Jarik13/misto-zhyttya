@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.mediaservice.dto.MediaResponse;
 import org.example.mediaservice.service.MediaService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -17,6 +14,11 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class MediaController {
     private final MediaService mediaService;
+
+    @GetMapping
+    public ResponseEntity<MediaResponse> getMedia(@RequestParam("mediaId") String mediaId) throws IOException {
+        return ResponseEntity.ok(mediaService.getPresignedUrl(mediaId));
+    }
 
     @PostMapping("/upload")
     public ResponseEntity<MediaResponse> uploadMedia(@RequestParam(value = "mediaFile") MultipartFile mediaFile) throws IOException {
