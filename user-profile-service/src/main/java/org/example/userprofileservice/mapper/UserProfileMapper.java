@@ -1,5 +1,6 @@
 package org.example.userprofileservice.mapper;
 
+import org.example.userprofileservice.dto.profile.ProfileResponse;
 import org.example.userprofileservice.model.Gender;
 import user.profile.CreateUserProfileRequest;
 import org.example.userprofileservice.model.Profile;
@@ -23,6 +24,16 @@ public class UserProfileMapper {
                 .gender(Gender.fromId(request.getGenderId()))
                 .avatarUrl(request.getAvatarUrl())
                 .userId(request.getUserId())
+                .build();
+    }
+
+    public static ProfileResponse toUserProfileResponse(Profile profile) {
+        return ProfileResponse.builder()
+                .username(profile.getUsername())
+                .phoneNumber(profile.getPhoneNumber())
+                .dateOfBirth(profile.getDateOfBirth())
+                .genderId(profile.getGender().getId())
+                .avatarUrl(profile.getAvatarUrl())
                 .build();
     }
 }

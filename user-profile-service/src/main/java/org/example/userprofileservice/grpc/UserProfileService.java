@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
+import org.example.userprofileservice.dto.profile.ProfileResponse;
 import org.example.userprofileservice.mapper.UserProfileMapper;
 import org.example.userprofileservice.model.Profile;
 import org.example.userprofileservice.repository.UserProfileRepository;

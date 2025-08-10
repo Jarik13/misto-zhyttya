@@ -1,9 +1,11 @@
 package org.example.userprofileservice.dto.profile;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
 import java.time.LocalDate;
 
+@Builder
 public record ProfileResponse(
         @Schema(description = "Username", example = "john_doe")
         String username,
