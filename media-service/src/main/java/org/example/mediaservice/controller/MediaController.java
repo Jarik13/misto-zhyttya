@@ -16,8 +16,8 @@ public class MediaController {
     private final MediaService mediaService;
 
     @GetMapping
-    public ResponseEntity<MediaResponse> getMedia(@RequestParam String url) throws IOException {
-        return ResponseEntity.ok(mediaService.getPresignedUrl(url));
+    public ResponseEntity<MediaResponse> getMedia(@RequestParam String key) throws IOException {
+        return ResponseEntity.ok(mediaService.getMediaWithPresignedUrl(key));
     }
 
     @PostMapping("/upload")

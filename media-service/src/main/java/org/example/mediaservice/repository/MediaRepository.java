@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface MediaRepository extends MongoRepository<Media, String> {
-    Optional<Media> findByUrl(String url);
+    Optional<Media> findByKey(String key);
 }
