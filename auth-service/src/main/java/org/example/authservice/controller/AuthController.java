@@ -59,9 +59,9 @@ public class AuthController {
 
     @Operation(summary = "Validate access token")
     @GetMapping("/validate")
-    public ResponseEntity<ValidationResponse> validateToken(@RequestHeader(value = "Authorization", required = false) String token) {
+    public ResponseEntity<String> validateToken(@RequestHeader(value = "Authorization", required = false) String token) {
         return token == null ?
                 ResponseEntity.status(HttpStatus.UNAUTHORIZED).build() :
-                ResponseEntity.ok(new ValidationResponse(authService.validateToken(token)));
+                ResponseEntity.ok(authService.validateToken(token));
     }
 }
