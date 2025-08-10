@@ -66,7 +66,7 @@ public class GitHubOAuth2UserInfoProcessor implements OAuth2UserInfoProcessor {
         attrs.put("phoneNumber", "");
         attrs.put("dateOfBirth", "");
         attrs.put("genderId", Gender.OTHER.getId());
-        attrs.put("avatarUrl", orig.getOrDefault("avatar_url", ""));
+        attrs.put("avatarKey", orig.getOrDefault("avatar_url", ""));
 
         return attrs;
     }

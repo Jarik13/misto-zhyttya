@@ -24,10 +24,9 @@ public class UserProfileServiceGrpcClient {
         blockingStub = UserProfileServiceGrpc.newBlockingStub(channel);
     }
 
-    public CreateUserProfileResponse createUserProfile(CreateUserProfileRequest request) {
+    public void createUserProfile(CreateUserProfileRequest request) {
         CreateUserProfileResponse response = blockingStub.createUserProfile(request);
         log.info("Created user profile: {}", response);
-        return response;
     }
 
     public CheckPhoneNumberResponse checkPhoneNumber(CheckPhoneNumberRequest request) {

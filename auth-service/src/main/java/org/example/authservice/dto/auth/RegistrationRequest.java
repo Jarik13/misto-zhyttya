@@ -40,10 +40,6 @@ public record RegistrationRequest(
         @NotNull(message = "Gender ID must not be null")
         @Min(value = 0, message = "Gender ID must be at least 0")
         @Max(value = 3, message = "Gender ID must be at most 3")
-        Long genderId,
-
-        @Schema(description = "URL to the user's avatar", example = "https://example.com/avatar.jpg")
-        @Pattern(regexp = "^(https?://).+", message = "Avatar URL must be a valid URL")
-        String avatarUrl
+        Long genderId
 ) {
 }

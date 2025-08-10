@@ -22,7 +22,7 @@ public class UserProfileMapper {
                 .phoneNumber(request.getPhoneNumber())
                 .dateOfBirth(dateOfBirth)
                 .gender(Gender.fromId(request.getGenderId()))
-                .avatarUrl(request.getAvatarUrl())
+                .avatarKey(request.getAvatarKey())
                 .userId(request.getUserId())
                 .build();
     }
@@ -33,7 +33,7 @@ public class UserProfileMapper {
                 .phoneNumber(profile.getPhoneNumber())
                 .dateOfBirth(profile.getDateOfBirth())
                 .genderId(profile.getGender().getId())
-                .avatarUrl(profile.getAvatarUrl())
+                .avatarKey(profile.getAvatarKey())
                 .build();
     }
 }

@@ -50,13 +50,12 @@ public class AuthServiceImpl implements AuthService {
         User user = userMapper.toUser(request);
         userRepository.save(user);
 
-        String avatarUrl = request.avatarUrl();
         CreateUserProfileRequest userProfileRequest = CreateUserProfileRequest.newBuilder()
                 .setUsername(request.username())
                 .setPhoneNumber(request.phoneNumber())
                 .setDateOfBirth(request.dateOfBirth().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .setGenderId(request.genderId())
-                .setAvatarUrl(avatarUrl != null ? avatarUrl : "")
+                .setAvatarKey("")
                 .setUserId(String.valueOf(user.getId()))
                 .build();
 

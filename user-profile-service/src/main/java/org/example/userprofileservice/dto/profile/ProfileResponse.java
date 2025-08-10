@@ -19,7 +19,7 @@ public record ProfileResponse(
         @Schema(description = "Gender ID (0 - male, 1 - female, 2 - transgender, 3 - not specified)", example = "0")
         Long genderId,
 
-        @Schema(description = "URL to the user's avatar", example = "https://example.com/avatar.jpg")
-        String avatarUrl
+        @Schema(description = "URL to the user's avatar", example = "123e4567-e89b-12d3-a456-426614174000-avatar.png")
+        String avatarKey
 ) {
 }

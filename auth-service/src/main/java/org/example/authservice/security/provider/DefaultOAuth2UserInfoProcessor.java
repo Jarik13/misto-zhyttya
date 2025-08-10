@@ -29,7 +29,7 @@ public class DefaultOAuth2UserInfoProcessor implements OAuth2UserInfoProcessor {
         attrs.put("phoneNumber", "");
         attrs.put("dateOfBirth", "");
         attrs.put("genderId", Gender.OTHER.getId());
-        attrs.put("avatarUrl", "");
+        attrs.put("avatarKey", "");
 
         return attrs;
     }

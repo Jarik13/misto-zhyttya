@@ -72,7 +72,7 @@ public class UserProfileService extends UserProfileServiceGrpc.UserProfileServic
         profile.setPhoneNumber(request.phoneNumber());
         profile.setDateOfBirth(request.dateOfBirth());
         profile.setGender(Gender.fromId(request.genderId()));
-        profile.setAvatarUrl(request.avatarUrl());
+        profile.setAvatarKey(request.avatarKey());
         userProfileRepository.save(profile);
     }
 }
