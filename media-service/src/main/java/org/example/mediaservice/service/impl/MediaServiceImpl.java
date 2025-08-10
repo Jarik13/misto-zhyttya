@@ -48,13 +48,13 @@ public class MediaServiceImpl implements MediaService {
 
         mediaRepository.save(media);
 
-        return new MediaResponse(media.getUrl());
+        return getPresignedUrl(media.getUrl());
     }
 
     @Override
-    public MediaResponse getPresignedUrl(String mediaId) {
-        Media media = mediaRepository.findById(mediaId)
-                .orElseThrow(() -> new RuntimeException("Media not found with id: " + mediaId));
+    public MediaResponse getPresignedUrl(String url) {
+        Media media = mediaRepository.findByUrl(url)
+                .orElseThrow(() -> new RuntimeException("Media not found with url: " + url));
 
         return new MediaResponse(s3PresignedService.generatePresignedUrl(media.getUrl()));
     }
