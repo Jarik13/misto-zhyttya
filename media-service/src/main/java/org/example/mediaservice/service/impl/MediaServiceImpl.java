@@ -5,9 +5,9 @@ import org.example.mediaservice.dto.MediaResponse;
 import org.example.mediaservice.model.Media;
 import org.example.mediaservice.repository.MediaRepository;
 import org.example.mediaservice.service.MediaService;
+import org.example.mediaservice.service.S3PresignedService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -21,6 +21,7 @@ import java.util.UUID;
 public class MediaServiceImpl implements MediaService {
     private final S3Client s3Client;
     private final MediaRepository mediaRepository;
+    private final S3PresignedService s3PresignedService;
 
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
@@ -38,17 +39,23 @@ public class MediaServiceImpl implements MediaService {
                 RequestBody.fromBytes(multipartFile.getBytes())
         );
 
-        String s3Url = String.format("s3://%s/%s", bucketName, key);
-
         Media media = Media.builder()
                 .filename(multipartFile.getOriginalFilename())
                 .contentType(multipartFile.getContentType())
-                .url(s3Url)
+                .url(key)
                 .size(multipartFile.getSize())
                 .build();
 
         mediaRepository.save(media);
 
         return new MediaResponse(media.getUrl());
+    }
+
+    @Override
+    public String getPresignedUrl(String mediaId) {
+        Media media = mediaRepository.findById(mediaId)
+                .orElseThrow(() -> new RuntimeException("Media not found with id: " + mediaId));
+
+        return s3PresignedService.generatePresignedUrl(media.getUrl());
     }
 }
