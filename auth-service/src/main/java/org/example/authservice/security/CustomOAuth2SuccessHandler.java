@@ -1,17 +1,18 @@
 package org.example.authservice.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.authservice.dto.auth.AuthResponse;
 import org.example.authservice.dto.gender.Gender;
 import org.example.authservice.grpc.UserProfileServiceGrpcClient;
 import org.example.authservice.model.AuthProvider;
 import org.example.authservice.model.Role;
 import org.example.authservice.model.User;
 import org.example.authservice.repository.UserRepository;
-import org.example.authservice.security.provider.OAuth2UserInfoProcessor;
 import org.example.authservice.security.provider.OAuth2UserInfoProcessorFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -49,7 +50,6 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                 .getAuthorizedClientRegistrationId();
 
         var processor = processorFactory.getProcessor(registrationId);
-
         Map<String, Object> profileAttrs = processor.extractAttributes(oAuth2User);
 
         String username = (String) profileAttrs.getOrDefault("username", email.substring(0, email.indexOf("@")));
@@ -86,12 +86,27 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             log.error("Failed to create user profile in user-profile-service", e);
         }
 
-        cookieUtils.addRefreshTokenCookie(
-                response,
-                jwtService.generateRefreshToken(email, userId.toString())
+        var profileResponse = userProfileServiceGrpcClient.getUserProfileInfo(
+                user.profile.GetUserProfileInfoRequest.newBuilder()
+                        .setUserId(userId.toString())
+                        .build()
         );
 
-        String targetUrl = "http://localhost:5173";
-        getRedirectStrategy().sendRedirect(request, response, targetUrl);
+        String accessToken = jwtService.generateAccessToken(email, userId.toString());
+        String refreshToken = jwtService.generateRefreshToken(email, userId.toString());
+        cookieUtils.addRefreshTokenCookie(response, refreshToken);
+
+        AuthResponse authResponse = new AuthResponse(
+                accessToken,
+                appUser.getRole().name(),
+                new AuthResponse.Profile(
+                        profileResponse.getUsername(),
+                        profileResponse.getAvatarKey()
+                )
+        );
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        new ObjectMapper().writeValue(response.getWriter(), authResponse);
     }
 }
