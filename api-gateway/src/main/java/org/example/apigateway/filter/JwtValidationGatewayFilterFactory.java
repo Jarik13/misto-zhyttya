@@ -3,13 +3,11 @@ package org.example.apigateway.filter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
-import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.server.ServerWebExchange;
 
 import java.util.Optional;
 
@@ -25,7 +23,7 @@ public class JwtValidationGatewayFilterFactory extends AbstractGatewayFilterFact
     @Override
     public GatewayFilter apply(Object config) {
         return (exchange, chain) -> {
-            String token = extractTokenFromCookie(exchange);
+            String token = extractTokenFromHeader(exchange.getRequest());
 
             if (token == null || token.isBlank()) {
                 exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -51,9 +49,10 @@ public class JwtValidationGatewayFilterFactory extends AbstractGatewayFilterFact
         };
     }
 
-    private String extractTokenFromCookie(ServerWebExchange exchange) {
-        return Optional.ofNullable(exchange.getRequest().getCookies().getFirst("access_token"))
-                .map(HttpCookie::getValue)
-                .orElseThrow(() -> new RuntimeException("Access token cookie is missing"));
+    private String extractTokenFromHeader(ServerHttpRequest request) {
+        return Optional.ofNullable(request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION))
+                .filter(header -> header.startsWith("Bearer "))
+                .map(header -> header.substring(7))
+                .orElse(null);
     }
 }
