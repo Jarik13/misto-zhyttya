@@ -42,9 +42,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse register(RegistrationRequest request, HttpServletResponse response) {
-        checkUserEmail(request.email());
         checkPasswords(request.password(), request.confirmPassword());
-        checkPhoneNumber(request.phoneNumber());
 
         User user = userMapper.toUser(request);
         userRepository.save(user);
@@ -78,19 +76,6 @@ public class AuthServiceImpl implements AuthService {
         GetUserProfileInfoResponse profileResponse = userProfileServiceGrpcClient.getUserProfileInfo(profileRequest);
 
         return getAuthResponse(response, user, profileResponse.getUsername(), profileResponse.getAvatarKey());
-    }
-
-    private AuthResponse getAuthResponse(HttpServletResponse response, User user, String username, String avatarKey) {
-        String accessToken = jwtService.generateAccessToken(user.getEmail(), user.getId().toString());
-        String refreshToken = jwtService.generateRefreshToken(user.getEmail(), user.getId().toString());
-
-        cookieUtils.addRefreshTokenCookie(response, refreshToken);
-
-        return new AuthResponse(
-                accessToken,
-                user.getRole().name(),
-                new AuthResponse.Profile(username, avatarKey)
-        );
     }
 
     @Override
@@ -156,30 +141,23 @@ public class AuthServiceImpl implements AuthService {
         throw new BusinessException(ErrorCode.INVALID_TOKEN);
     }
 
-    private void checkUserEmail(String email) {
-        if (userRepository.existsByEmailIgnoreCase(email)) {
-            throw new BusinessException(ErrorCode.EMAIL_ALREADY_EXISTS);
-        }
-    }
-
     private void checkPasswords(String password, String confirmPassword) {
         if (password == null || !password.equals(confirmPassword)) {
             throw new BusinessException(ErrorCode.PASSWORD_MISMATCH);
         }
     }
 
-    private void checkPhoneNumber(String phoneNumber) {
-        if (phoneNumber == null || phoneNumber.isEmpty()) {
-            throw new BusinessException(ErrorCode.PHONE_IS_EMPTY);
-        }
+    private AuthResponse getAuthResponse(HttpServletResponse response, User user, String username, String avatarKey) {
+        String accessToken = jwtService.generateAccessToken(user.getEmail(), user.getId().toString());
+        String refreshToken = jwtService.generateRefreshToken(user.getEmail(), user.getId().toString());
 
-        boolean isUnique = userProfileServiceGrpcClient.checkPhoneNumber(
-                        CheckPhoneNumberRequest.newBuilder().setPhoneNumber(phoneNumber).build())
-                .getIsUnique();
+        cookieUtils.addRefreshTokenCookie(response, refreshToken);
 
-        if (!isUnique) {
-            throw new BusinessException(ErrorCode.PHONE_ALREADY_EXISTS);
-        }
+        return new AuthResponse(
+                accessToken,
+                user.getRole().name(),
+                new AuthResponse.Profile(username, avatarKey)
+        );
     }
 
     private UUID extractUserIdFromAccessToken(HttpServletRequest request) {
