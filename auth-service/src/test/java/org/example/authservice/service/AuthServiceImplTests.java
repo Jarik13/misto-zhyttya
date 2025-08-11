@@ -12,6 +12,7 @@ import org.example.authservice.dto.auth.RegistrationRequest;
 import org.example.authservice.exception.BusinessException;
 import org.example.authservice.grpc.UserProfileServiceGrpcClient;
 import org.example.authservice.mapper.UserMapper;
+import org.example.authservice.model.Role;
 import org.example.authservice.model.User;
 import org.example.authservice.repository.UserRepository;
 import org.example.authservice.security.CookieUtils;
@@ -22,8 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import user.profile.CheckPhoneNumberRequest;
-import user.profile.CheckPhoneNumberResponse;
+import user.profile.*;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -84,17 +84,28 @@ class AuthServiceImplTests {
         );
 
         HttpServletResponse response = mock(HttpServletResponse.class);
+
+        UUID userId = UUID.randomUUID();
         User user = new User();
-        user.setId(UUID.randomUUID());
+        user.setId(userId);
         user.setEmail(request.email());
+        user.setRole(Role.USER);
 
         when(userRepository.existsByEmailIgnoreCase(request.email())).thenReturn(false);
+
         when(userMapper.toUser(request)).thenReturn(user);
-        when(jwtService.generateAccessToken(any(), any())).thenReturn("access-token");
-        when(jwtService.generateRefreshToken(any(), any())).thenReturn("refresh-token");
 
         when(userProfileServiceGrpcClient.checkPhoneNumber(any(CheckPhoneNumberRequest.class)))
                 .thenReturn(CheckPhoneNumberResponse.newBuilder().setIsUnique(true).build());
+
+        when(jwtService.generateAccessToken(any(), any())).thenReturn("access-token");
+        when(jwtService.generateRefreshToken(any(), any())).thenReturn("refresh-token");
+
+        when(userProfileServiceGrpcClient.createUserProfile(any(CreateUserProfileRequest.class)))
+                .thenReturn(CreateUserProfileResponse.newBuilder()
+                        .setUsername("john_doe")
+                        .setAvatarKey("avatar.png")
+                        .build());
 
         var authResponse = authService.register(request, response);
 
@@ -102,6 +113,9 @@ class AuthServiceImplTests {
         verify(cookieUtils).addRefreshTokenCookie(response, "refresh-token");
 
         assertEquals("access-token", authResponse.accessToken());
+        assertEquals("USER", authResponse.role());
+        assertEquals("john_doe", authResponse.profile().username());
+        assertEquals("avatar.png", authResponse.profile().avatarKey());
     }
 
     @Test
@@ -136,17 +150,26 @@ class AuthServiceImplTests {
         LoginRequest request = new LoginRequest("john@example.com", "Password123!");
         HttpServletResponse response = mock(HttpServletResponse.class);
 
+        UUID userId = UUID.randomUUID();
         User user = new User();
-        user.setId(UUID.randomUUID());
+        user.setId(userId);
         user.setEmail(request.email());
         user.setPassword("encodedPassword");
+        user.setRole(Role.USER);
 
         when(userRepository.findByEmailIgnoreCase(request.email())).thenReturn(Optional.of(user));
+
         when(jwtService.generateAccessToken(any(), any())).thenReturn("access-token");
         when(jwtService.generateRefreshToken(any(), any())).thenReturn("refresh-token");
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(mock(org.springframework.security.core.Authentication.class));
+
+        GetUserProfileInfoResponse profileResponse = GetUserProfileInfoResponse.newBuilder()
+                .setUsername("john_doe")
+                .setAvatarKey("avatar.png")
+                .build();
+        when(userProfileServiceGrpcClient.getUserProfileInfo(any())).thenReturn(profileResponse);
 
         var authResponse = authService.login(request, response);
 
@@ -154,6 +177,9 @@ class AuthServiceImplTests {
         verify(cookieUtils).addRefreshTokenCookie(response, "refresh-token");
 
         assertEquals("access-token", authResponse.accessToken());
+        assertEquals("USER", authResponse.role());
+        assertEquals("john_doe", authResponse.profile().username());
+        assertEquals("avatar.png", authResponse.profile().avatarKey());
     }
 
     @Test
@@ -177,13 +203,30 @@ class AuthServiceImplTests {
     void givenValidRefreshToken_whenRefreshAccessToken_thenReturnNewAccessToken() {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
+        UUID userId = UUID.randomUUID();
+
+        User user = new User();
+        user.setId(userId);
+        user.setRole(Role.USER);
+        user.setEmail("test@example.com");
 
         when(cookieUtils.getRefreshToken(request)).thenReturn("refresh-token");
         when(jwtService.refreshAccessToken("refresh-token")).thenReturn("new-access-token");
+        when(jwtService.extractUserId("new-access-token")).thenReturn(userId.toString());
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        GetUserProfileInfoResponse profileResponse = GetUserProfileInfoResponse.newBuilder()
+                .setUsername("testUser")
+                .setAvatarKey("avatar.png")
+                .build();
+        when(userProfileServiceGrpcClient.getUserProfileInfo(any())).thenReturn(profileResponse);
 
         var authResponse = authService.refreshAccessToken(request, response);
 
         assertEquals("new-access-token", authResponse.accessToken());
+        assertEquals("USER", authResponse.role());
+        assertEquals("testUser", authResponse.profile().username());
+        assertEquals("avatar.png", authResponse.profile().avatarKey());
     }
 
     @Test
@@ -322,7 +365,7 @@ class AuthServiceImplTests {
 
         assertTrue(violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("email")
-                               && v.getMessage().contains("valid")));
+                               && v.getMessage().contains("Електронна пошта повинна бути валідною")));
     }
 
     @Test
@@ -341,7 +384,7 @@ class AuthServiceImplTests {
 
         assertTrue(violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("username")
-                               && v.getMessage().contains("must not be empty")));
+                               && v.getMessage().contains("Ім'я користувача не може бути порожнім")));
     }
 
     @Test
@@ -360,7 +403,7 @@ class AuthServiceImplTests {
 
         assertTrue(violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("password")
-                               && v.getMessage().contains("special character")));
+                               && v.getMessage().contains("Пароль повинен містити принаймні одну велику літеру")));
     }
 
     @Test
@@ -379,7 +422,7 @@ class AuthServiceImplTests {
 
         assertTrue(violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("dateOfBirth")
-                               && v.getMessage().contains("must not be null")));
+                               && v.getMessage().contains("Дата народження не може бути порожньою")));
     }
 
     @Test
@@ -398,7 +441,7 @@ class AuthServiceImplTests {
 
         assertTrue(violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("genderId")
-                               && v.getMessage().contains("must be at most 3")));
+                               && v.getMessage().contains("Стать повинна мати значення не більше за 3")));
     }
 
     // endregion
@@ -417,7 +460,7 @@ class AuthServiceImplTests {
 
         assertTrue(violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("email")
-                               && v.getMessage().contains("valid")));
+                               && v.getMessage().contains("Електронна пошта повинна бути валідною")));
     }
 
     @Test
@@ -431,7 +474,7 @@ class AuthServiceImplTests {
 
         assertTrue(violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("email")
-                               && v.getMessage().contains("must not be empty")));
+                               && v.getMessage().contains("Електронна пошта не повинна бути порожньою")));
     }
 
     @Test
@@ -445,7 +488,7 @@ class AuthServiceImplTests {
 
         assertTrue(violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("password")
-                               && v.getMessage().contains("at least 6 characters")));
+                               && v.getMessage().contains("Пароль повинен містити щонайменше 6 символів")));
     }
 
     @Test
@@ -459,7 +502,7 @@ class AuthServiceImplTests {
 
         assertTrue(violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("password")
-                               && v.getMessage().contains("must not be empty")));
+                               && v.getMessage().contains("Пароль не може бути порожнім")));
     }
 
     // endregion
@@ -479,7 +522,7 @@ class AuthServiceImplTests {
 
         assertTrue(violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("currentPassword")
-                               && v.getMessage().contains("must not be empty")));
+                               && v.getMessage().contains("не може бути порожнім")));
     }
 
     @Test
@@ -494,7 +537,7 @@ class AuthServiceImplTests {
 
         assertTrue(violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("newPassword")
-                               && v.getMessage().contains("uppercase letter")));
+                               && v.getMessage().contains("щонайменше одну велику літеру")));
     }
 
     @Test
@@ -509,7 +552,7 @@ class AuthServiceImplTests {
 
         assertTrue(violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("newPassword")
-                               && v.getMessage().contains("must not be empty")));
+                               && v.getMessage().contains("не може бути порожнім")));
     }
 
     @Test
@@ -524,7 +567,7 @@ class AuthServiceImplTests {
 
         assertTrue(violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("confirmNewPassword")
-                               && v.getMessage().contains("must not be empty")));
+                               && v.getMessage().contains("не може бути порожнім")));
     }
 
     // endregion

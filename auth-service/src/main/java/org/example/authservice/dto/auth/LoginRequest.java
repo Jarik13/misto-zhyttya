@@ -12,7 +12,7 @@ public record LoginRequest(
         String email,
 
         @Schema(description = "Пароль користувача", example = "Password123!")
-        @NotBlank(message = "Пароль не повинен бути порожнім")
+        @NotBlank(message = "Пароль не може бути порожнім")
         @Size(min = 6, message = "Пароль повинен містити щонайменше 6 символів")
         String password
 ) {

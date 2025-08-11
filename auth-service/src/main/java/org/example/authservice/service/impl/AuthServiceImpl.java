@@ -100,7 +100,27 @@ public class AuthServiceImpl implements AuthService {
             log.warn("Refresh token is missing in the request cookies");
             throw new BusinessException(ErrorCode.REFRESH_TOKEN_MISSED);
         }
-        return null;
+
+        String accessToken = jwtService.refreshAccessToken(refreshToken);
+
+        UUID userId = UUID.fromString(jwtService.extractUserId(accessToken));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        GetUserProfileInfoRequest profileRequest = GetUserProfileInfoRequest.newBuilder()
+                .setUserId(userId.toString())
+                .build();
+        GetUserProfileInfoResponse profileResponse = userProfileServiceGrpcClient.getUserProfileInfo(profileRequest);
+
+        return new AuthResponse(
+                accessToken,
+                user.getRole().name(),
+                new AuthResponse.Profile(
+                        profileResponse.getUsername(),
+                        profileResponse.getAvatarKey()
+                )
+        );
     }
 
     @Override
