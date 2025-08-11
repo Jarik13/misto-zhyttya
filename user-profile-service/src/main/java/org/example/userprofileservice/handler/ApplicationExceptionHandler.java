@@ -3,6 +3,7 @@ package org.example.userprofileservice.handler;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.example.userprofileservice.dto.error.ErrorResponse;
+import org.example.userprofileservice.exception.BusinessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -18,6 +19,22 @@ import static org.example.userprofileservice.dto.error.ErrorCode.RESOURCE_NOT_FO
 @Slf4j
 @RestControllerAdvice
 public class ApplicationExceptionHandler {
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusiness(BusinessException ex) {
+        ErrorResponse body = ErrorResponse.builder()
+                .code(ex.getErrorCode()
+                        .getCode())
+                .message(ex.getMessage())
+                .build();
+
+        log.info("Business Exception: {}", body);
+        log.debug(ex.getMessage(), ex);
+
+        return ResponseEntity.status(ex.getErrorCode().getStatus() != null ?
+                ex.getErrorCode().getStatus() :
+                HttpStatus.BAD_REQUEST).body(body);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException exp) {
         List<ErrorResponse.ValidationError> errors = new ArrayList<>();
