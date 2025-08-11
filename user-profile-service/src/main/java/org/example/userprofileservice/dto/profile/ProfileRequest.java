@@ -23,10 +23,13 @@ public record ProfileRequest(
         @Past(message = "Дата народження має бути у минулому")
         LocalDate dateOfBirth,
 
-        @Schema(description = "Ідентифікатор статі (0 - чоловік, 1 - жінка, 2 - трансгендер, 3 - не вказано)", example = "0")
-        @NotNull(message = "Ідентифікатор статі не може бути порожнім")
-        @Min(value = 0, message = "Ідентифікатор статі має бути не менше 0")
-        @Max(value = 3, message = "Ідентифікатор статі має бути не більше 3")
+        @Schema(
+                description = "Стать користувача (0 - чоловік, 1 - жінка, 2 - трансгендер, 3 - не вказано)",
+                example = "0"
+        )
+        @NotNull(message = "Стать не може бути порожньою")
+        @Min(value = 0, message = "Стать повинна мати значення не менше за 0")
+        @Max(value = 3, message = "Стать повинна мати значення не більше за 3")
         Long genderId,
 
         @Schema(description = "Ключ аватарки користувача", example = "123e4567-e89b-12d3-a456-426614174000-avatar.png")
