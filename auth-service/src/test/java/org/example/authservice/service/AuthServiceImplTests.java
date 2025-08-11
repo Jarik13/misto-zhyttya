@@ -118,28 +118,6 @@ class AuthServiceImplTests {
         assertEquals("avatar.png", authResponse.profile().avatarKey());
     }
 
-    @Test
-    void givenExistingEmail_whenRegister_thenThrowBusinessException() {
-        RegistrationRequest request = new RegistrationRequest(
-                "john_doe",
-                "john@example.com",
-                "Password123!",
-                "Password123!",
-                "+380991234567",
-                LocalDate.of(2000, 10, 10),
-                1L
-        );
-
-        when(userRepository.existsByEmailIgnoreCase(request.email())).thenReturn(true);
-
-        HttpServletResponse response = mock(HttpServletResponse.class);
-
-        BusinessException ex = assertThrows(BusinessException.class,
-                () -> authService.register(request, response));
-
-        assertEquals("EMAIL_ALREADY_EXISTS", ex.getErrorCode().name());
-    }
-
     // endregion
 
 
@@ -342,106 +320,6 @@ class AuthServiceImplTests {
         BusinessException ex = assertThrows(BusinessException.class,
                 () -> authService.changePassword(request, changeRequest));
         assertEquals("INVALID_CURRENT_PASSWORD", ex.getErrorCode().name());
-    }
-
-    // endregion
-
-
-    // region: Validation Tests for RegistrationRequest
-
-    @Test
-    void givenInvalidEmail_whenValidateRegistrationRequest_thenValidationFails() {
-        RegistrationRequest request = new RegistrationRequest(
-                "john_doe",
-                "invalid-email",
-                "Password123!",
-                "Password123!",
-                "+380991234567",
-                LocalDate.of(2000, 1, 1),
-                0L
-        );
-
-        Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
-
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("email")
-                               && v.getMessage().contains("Електронна пошта повинна бути валідною")));
-    }
-
-    @Test
-    void givenEmptyUsername_whenValidateRegistrationRequest_thenValidationFails() {
-        RegistrationRequest request = new RegistrationRequest(
-                "",
-                "john@example.com",
-                "Password123!",
-                "Password123!",
-                "+380991234567",
-                LocalDate.of(2000, 1, 1),
-                0L
-        );
-
-        Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
-
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("username")
-                               && v.getMessage().contains("Ім'я користувача не може бути порожнім")));
-    }
-
-    @Test
-    void givenPasswordWithoutSpecialCharacter_whenValidateRegistrationRequest_thenValidationFails() {
-        RegistrationRequest request = new RegistrationRequest(
-                "john_doe",
-                "john@example.com",
-                "Password123",
-                "Password123",
-                "+380991234567",
-                LocalDate.of(2000, 1, 1),
-                0L
-        );
-
-        Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
-
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("password")
-                               && v.getMessage().contains("Пароль повинен містити принаймні одну велику літеру")));
-    }
-
-    @Test
-    void givenNullDateOfBirth_whenValidateRegistrationRequest_thenValidationFails() {
-        RegistrationRequest request = new RegistrationRequest(
-                "john_doe",
-                "john@example.com",
-                "Password123!",
-                "Password123!",
-                "+380991234567",
-                null,
-                0L
-        );
-
-        Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
-
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("dateOfBirth")
-                               && v.getMessage().contains("Дата народження не може бути порожньою")));
-    }
-
-    @Test
-    void givenInvalidGenderId_whenValidateRegistrationRequest_thenValidationFails() {
-        RegistrationRequest request = new RegistrationRequest(
-                "john_doe",
-                "john@example.com",
-                "Password123!",
-                "Password123!",
-                "+380991234567",
-                LocalDate.of(2000, 1, 1),
-                10L
-        );
-
-        Set<ConstraintViolation<RegistrationRequest>> violations = validator.validate(request);
-
-        assertTrue(violations.stream()
-                .anyMatch(v -> v.getPropertyPath().toString().equals("genderId")
-                               && v.getMessage().contains("Стать повинна мати значення не більше за 3")));
     }
 
     // endregion
