@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     RESOURCE_NOT_FOUND("RESOURCE_NOT_FOUND", "Ресурс не знайдено", HttpStatus.NOT_FOUND),
     INTERNAL_EXCEPTION("INTERNAL_EXCEPTION", "Внутрішня помилка сервера, будь ласка, спробуйте пізніше або зверніться до адміністратора", HttpStatus.INTERNAL_SERVER_ERROR),
+    PHONE_ALREADY_EXISTS("PHONE_ALREADY_EXISTS", "Цей номер телефону вже зайнятий", HttpStatus.CONFLICT),
     ;
 
     private final String code;

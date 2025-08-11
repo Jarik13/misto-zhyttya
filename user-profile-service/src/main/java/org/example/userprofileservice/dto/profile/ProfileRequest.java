@@ -2,6 +2,7 @@ package org.example.userprofileservice.dto.profile;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
+import org.example.userprofileservice.annotation.UniquePhoneNumber;
 
 import java.time.LocalDate;
 
@@ -13,6 +14,7 @@ public record ProfileRequest(
 
         @Schema(description = "Номер телефону у міжнародному форматі", example = "+380991234567")
         @NotBlank(message = "Номер телефону не має бути порожнім")
+        @UniquePhoneNumber
         @Pattern(regexp = "^\\+?[0-9]{10,13}$", message = "Номер телефону має містити від 10 до 13 цифр та може починатися з +")
         String phoneNumber,
 
