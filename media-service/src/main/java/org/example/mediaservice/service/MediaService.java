@@ -7,5 +7,6 @@ import java.io.IOException;
 
 public interface MediaService {
     MediaResponse uploadMedia(MultipartFile multipartFile) throws IOException;
+    void deleteMediaByKey(String key);
     MediaResponse getMediaWithPresignedUrl(String mediaId);
 }

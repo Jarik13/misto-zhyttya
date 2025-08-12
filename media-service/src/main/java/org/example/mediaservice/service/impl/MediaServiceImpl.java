@@ -1,6 +1,7 @@
 package org.example.mediaservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.mediaservice.dto.error.ErrorCode;
 import org.example.mediaservice.dto.media.MediaResponse;
 import org.example.mediaservice.exception.BusinessException;
@@ -14,11 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MediaServiceImpl implements MediaService {
@@ -56,10 +59,32 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
+    @Transactional
+    public void deleteMediaByKey(String key) {
+        Media media = mediaRepository.findByKey(key)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Media not found with key: " + key));
+
+        deleteObjectFromS3(key);
+
+        mediaRepository.delete(media);
+
+        log.info("Deleted media with key: {}", key);
+    }
+
+    @Override
     public MediaResponse getMediaWithPresignedUrl(String key) {
         Media media = mediaRepository.findByKey(key)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Media not found with key: " + key));
 
         return new MediaResponse(key, s3PresignedService.generatePresignedUrl(media.getKey()));
+    }
+
+    private void deleteObjectFromS3(String key) {
+        s3Client.deleteObject(DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build());
+
+        log.info("Deleted S3 object with key: {}", key);
     }
 }
