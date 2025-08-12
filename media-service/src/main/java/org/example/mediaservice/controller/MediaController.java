@@ -52,4 +52,19 @@ public class MediaController {
     ) throws IOException {
         return ResponseEntity.ok(mediaService.uploadMedia(mediaFile));
     }
+
+    @Operation(summary = "Видалити медіа файл за ключем",
+            description = "Видаляє медіа файл з бази даних та з S3 за вказаним ключем",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Медіа файл успішно видалено"),
+                    @ApiResponse(responseCode = "404", description = "Медіа файл не знайдено", content = @Content)
+            })
+    @DeleteMapping
+    public ResponseEntity<Void> deleteMediaByKey(
+            @Parameter(description = "Ключ медіа файлу для видалення", required = true, example = "123e4567-e89b-12d3-a456-426614174000-avatar.png")
+            @RequestParam String key
+    ) {
+        mediaService.deleteMediaByKey(key);
+        return ResponseEntity.noContent().build();
+    }
 }
