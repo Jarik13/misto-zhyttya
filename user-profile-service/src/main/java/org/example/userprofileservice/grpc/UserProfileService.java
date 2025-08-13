@@ -8,11 +8,15 @@ import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.example.userprofileservice.dto.profile.ProfileRequest;
 import org.example.userprofileservice.dto.profile.ProfileResponse;
+import org.example.userprofileservice.exception.ValidationException;
 import org.example.userprofileservice.kafka.UserProfileProducer;
 import org.example.userprofileservice.mapper.UserProfileMapper;
 import org.example.userprofileservice.model.Gender;
 import org.example.userprofileservice.model.Profile;
 import org.example.userprofileservice.repository.UserProfileRepository;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.validation.BeanPropertyBindingResult;
 import user.profile.*;
 
 @Slf4j
@@ -83,18 +87,29 @@ public class UserProfileService extends UserProfileServiceGrpc.UserProfileServic
         Profile profile = userProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " not found"));
 
+        if (userProfileRepository.existsByPhoneNumberAndUserIdNot(request.phoneNumber(), userId)) {
+            BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(request, "profileRequest");
+            bindingResult.rejectValue("phoneNumber", "VALIDATION_ERROR", "Цей номер телефону вже використовується");
+            throw new ValidationException(bindingResult);
+        }
+
         profile.setUsername(request.username());
         profile.setPhoneNumber(request.phoneNumber());
         profile.setDateOfBirth(request.dateOfBirth());
         profile.setGender(Gender.fromId(request.genderId()));
 
         String oldAvatarKey = profile.getAvatarKey();
-        if (oldAvatarKey != null || request.avatarKey() == null) {
-            userProfileProducer.deleteUserAvatar(oldAvatarKey);
-        }
-
         profile.setAvatarKey(request.avatarKey());
 
         userProfileRepository.save(profile);
+
+        if (oldAvatarKey != null && !oldAvatarKey.equals(request.avatarKey())) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                @Override
+                public void afterCommit() {
+                    userProfileProducer.deleteUserAvatar(oldAvatarKey);
+                }
+            });
+        }
     }
 }

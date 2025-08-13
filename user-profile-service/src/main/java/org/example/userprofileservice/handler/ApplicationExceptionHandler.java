@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.example.userprofileservice.dto.error.ErrorResponse;
 import org.example.userprofileservice.exception.BusinessException;
+import org.example.userprofileservice.exception.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -19,6 +20,26 @@ import static org.example.userprofileservice.dto.error.ErrorCode.RESOURCE_NOT_FO
 @Slf4j
 @RestControllerAdvice
 public class ApplicationExceptionHandler {
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(ValidationException ex) {
+        List<ErrorResponse.ValidationError> errors = new ArrayList<>();
+
+        ex.getBindingResult().getFieldErrors().forEach(error -> errors
+                .add(ErrorResponse.ValidationError.builder()
+                        .field(error.getField())
+                        .code(error.getCode())
+                        .message(error.getDefaultMessage())
+                        .build()));
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code("VALIDATION_FAILED")
+                .message("Validation failed for one or more fields")
+                .validationErrors(errors)
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusiness(BusinessException ex) {
         ErrorResponse body = ErrorResponse.builder()
