@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.example.userprofileservice.dto.profile.ProfileRequest;
 import org.example.userprofileservice.dto.profile.ProfileResponse;
+import org.example.userprofileservice.kafka.UserProfileProducer;
 import org.example.userprofileservice.mapper.UserProfileMapper;
 import org.example.userprofileservice.model.Gender;
 import org.example.userprofileservice.model.Profile;
@@ -19,6 +20,7 @@ import user.profile.*;
 @RequiredArgsConstructor
 public class UserProfileService extends UserProfileServiceGrpc.UserProfileServiceImplBase {
     private final UserProfileRepository userProfileRepository;
+    private final UserProfileProducer userProfileProducer;
 
     @Override
     @Transactional
@@ -85,7 +87,14 @@ public class UserProfileService extends UserProfileServiceGrpc.UserProfileServic
         profile.setPhoneNumber(request.phoneNumber());
         profile.setDateOfBirth(request.dateOfBirth());
         profile.setGender(Gender.fromId(request.genderId()));
+
+        String oldAvatarKey = profile.getAvatarKey();
+        if (oldAvatarKey != null || request.avatarKey() == null) {
+            userProfileProducer.deleteUserAvatar(oldAvatarKey);
+        }
+
         profile.setAvatarKey(request.avatarKey());
+
         userProfileRepository.save(profile);
     }
 }
