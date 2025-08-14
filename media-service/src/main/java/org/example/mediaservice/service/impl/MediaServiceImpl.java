@@ -6,6 +6,7 @@ import org.example.mediaservice.dto.error.ErrorCode;
 import org.example.mediaservice.dto.media.MediaResponse;
 import org.example.mediaservice.exception.BusinessException;
 import org.example.mediaservice.model.Media;
+import org.example.mediaservice.model.Status;
 import org.example.mediaservice.repository.MediaRepository;
 import org.example.mediaservice.service.MediaService;
 import org.example.mediaservice.service.S3PresignedService;
@@ -51,6 +52,7 @@ public class MediaServiceImpl implements MediaService {
                 .contentType(multipartFile.getContentType())
                 .key(key)
                 .size(multipartFile.getSize())
+                .status(Status.PENDING)
                 .build();
 
         mediaRepository.save(media);
