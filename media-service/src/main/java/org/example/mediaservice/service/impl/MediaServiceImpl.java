@@ -20,6 +20,7 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -87,6 +88,25 @@ public class MediaServiceImpl implements MediaService {
             media.setStatus(Status.valueOf(action));
             mediaRepository.save(media);
         });
+    }
+
+    @Override
+    public void deleteMedia(Status status) {
+        List<Media> mediaList = mediaRepository.findAll()
+                .stream()
+                .filter(media -> media.getStatus() == status)
+                .toList();
+
+        for (Media media : mediaList) {
+            try {
+                deleteObjectFromS3(media.getKey());
+            } catch (Exception e) {
+                log.error("Failed to delete S3 object with key {}: {}", media.getKey(), e.getMessage());
+            }
+        }
+
+        mediaRepository.deleteAll(mediaList);
+        log.info("Deleted {} media records with status {}", mediaList.size(), status);
     }
 
     private void deleteObjectFromS3(String key) {

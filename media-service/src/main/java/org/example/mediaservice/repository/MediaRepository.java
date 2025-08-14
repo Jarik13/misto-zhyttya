@@ -10,5 +10,4 @@ import java.util.Optional;
 @Repository
 public interface MediaRepository extends MongoRepository<Media, String> {
     Optional<Media> findByKey(String key);
-    void deleteByStatus(Status status);
 }
