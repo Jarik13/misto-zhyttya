@@ -2,7 +2,7 @@ package org.example.mediaservice.kafka.strategy.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.mediaservice.dto.media.AvatarEvent;
+import org.example.mediaservice.event.AvatarEvent;
 import org.example.mediaservice.kafka.strategy.AvatarEventHandler;
 import org.example.mediaservice.model.Status;
 import org.example.mediaservice.service.MediaService;
