@@ -81,6 +81,14 @@ public class MediaServiceImpl implements MediaService {
         return new MediaResponse(key, s3PresignedService.generatePresignedUrl(media.getKey()));
     }
 
+    @Override
+    public void updateMediaStatus(String action, String key) {
+        mediaRepository.findByKey(key).ifPresent(media -> {
+            media.setStatus(Status.valueOf(action));
+            mediaRepository.save(media);
+        });
+    }
+
     private void deleteObjectFromS3(String key) {
         s3Client.deleteObject(DeleteObjectRequest.builder()
                 .bucket(bucketName)
