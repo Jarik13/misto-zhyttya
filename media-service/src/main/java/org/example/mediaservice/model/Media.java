@@ -18,6 +18,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Media {
+
     @Id
     private String id;
 
@@ -32,6 +33,9 @@ public class Media {
 
     @Field(name = "size")
     private long size;
+
+    @Field(name = "status")
+    private Status status;
 
     @CreatedDate
     @Field(name = "uploaded_at")
