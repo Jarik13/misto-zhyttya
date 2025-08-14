@@ -1,4 +1,4 @@
-package org.example.mediaservice.dto.media;
+package org.example.mediaservice.event;
 
 public record AvatarEvent(
         String action,
