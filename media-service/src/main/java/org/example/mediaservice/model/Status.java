@@ -1,5 +1,5 @@
 package org.example.mediaservice.model;
 
 public enum Status {
-    PENDING, APPROVED
+    PENDING, APPROVED, DELETED
 }

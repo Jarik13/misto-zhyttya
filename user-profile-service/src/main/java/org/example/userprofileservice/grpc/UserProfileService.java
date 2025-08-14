@@ -101,13 +101,15 @@ public class UserProfileService extends UserProfileServiceGrpc.UserProfileServic
         String oldAvatarKey = profile.getAvatarKey();
         profile.setAvatarKey(request.avatarKey());
 
+        userProfileProducer.sendAvatarEvent("APPROVED", request.avatarKey() );
+
         userProfileRepository.save(profile);
 
         if (oldAvatarKey != null && !oldAvatarKey.equals(request.avatarKey())) {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
                 @Override
                 public void afterCommit() {
-                    userProfileProducer.deleteUserAvatar(oldAvatarKey);
+                    userProfileProducer.sendAvatarEvent("DELETED", oldAvatarKey);
                 }
             });
         }
