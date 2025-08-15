@@ -1,0 +1,23 @@
+package org.example.authservice.exception;
+
+import lombok.Getter;
+import org.example.authservice.dto.error.ErrorCode;
+
+@Getter
+public class BusinessException extends RuntimeException {
+    private final ErrorCode errorCode;
+    private final Object[] args;
+
+    public BusinessException(ErrorCode errorCode, Object... args) {
+        super(getFormatterMessage(errorCode, args));
+        this.errorCode = errorCode;
+        this.args = args;
+    }
+
+    private static String getFormatterMessage(ErrorCode errorCode, Object... args) {
+        if (args != null && args.length > 0) {
+            return String.format(errorCode.getDefaultMessage(), args);
+        }
+        return errorCode.getDefaultMessage();
+    }
+}

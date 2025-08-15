@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-profiles
+      author: Yaroslav Guz
+      changes:
+        - createTable:
+            tableName: profiles
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone_number
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: date_of_birth
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: gender
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: avatar_url
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: user_id
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: false
+                    unique: true

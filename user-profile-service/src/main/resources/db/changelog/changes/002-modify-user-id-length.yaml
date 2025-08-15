@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-modify-user-id-length
+      author: Yaroslav Guz
+      changes:
+        - modifyDataType:
+            tableName: profiles
+            columnName: user_id
+            newDataType: VARCHAR(255)

@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: "db/changelog/changes/001-create-users-and-refresh-tokens.yaml"
+  - include:
+      file: "db/changelog/changes/002-change-token-type-in-refresh-tokens.yaml"
+  - include:
+      file: "db/changelog/changes/003-remove-refresh-tokens.yaml"
+  - include:
+      file: "db/changelog/changes/004-alter-users-for-oauth.yaml"

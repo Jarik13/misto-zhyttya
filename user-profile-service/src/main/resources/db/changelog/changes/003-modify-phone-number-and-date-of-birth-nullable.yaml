@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-modify-phone-number-and-date-of-birth-nullable
+      author: Yaroslav Guz
+      changes:
+        - dropNotNullConstraint:
+            tableName: profiles
+            columnName: date_of_birth
+            columnDataType: DATE
+        - dropNotNullConstraint:
+            tableName: profiles
+            columnName: phone_number
+            columnDataType: VARCHAR(100)

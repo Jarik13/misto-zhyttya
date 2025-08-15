@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: media-service
+
+  data:
+    mongodb:
+      host: ${SPRING_DATA_MONGODB_HOST:media-db}
+      port: ${SPRING_DATA_MONGODB_PORT:27017}
+      database: ${SPRING_DATA_MONGODB_DATABASE:media_service_db}
+      username: ${SPRING_DATA_MONGODB_USERNAME:root}
+      password: ${SPRING_DATA_MONGODB_PASSWORD:secret}
+      authentication-database: ${SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE:admin}
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  kafka:
+    consumer:
+      bootstrap-servers: kafka:9092
+      group-id: media-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      auto-offset-reset: earliest
+
+server:
+  port: 4003
+
+aws:
+  s3:
+    bucket-name: ${AWS_BUCKET_NAME}
+    access-key: ${AWS_ACCESS_KEY_ID}
+    secret-key: ${AWS_SECRET_ACCESS_KEY}
+    region: ${AWS_REGION}
