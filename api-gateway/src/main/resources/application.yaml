@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: auth-service-route
+              uri: http://auth-service:4001
+              predicates:
+                - Path=/auth/**, /oauth2/**, /login/oauth2/**
+              filters:
+                - StripPrefix=0
+
+            - id: genders-open-route
+              uri: http://user-profile-service:4002
+              predicates:
+                - Path=/api/v1/genders
+              filters:
+                - StripPrefix=0
+
+            - id: user-profile-service-route
+              uri: http://user-profile-service:4002
+              predicates:
+                - Path=/api/v1/profiles/**
+              filters:
+                - StripPrefix=0
+                - JwtValidation
+
+            - id: media-service-route
+              uri: http://media-service:4003
+              predicates:
+                - Path=/api/v1/media/**
+              filters:
+                - StripPrefix=0
+                - JwtValidation
+
+server:
+  port: 4000
+
+auth:
+  service:
+    url: ${AUTH_SERVICE_URL}
