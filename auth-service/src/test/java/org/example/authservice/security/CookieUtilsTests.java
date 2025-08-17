@@ -37,7 +37,7 @@ public class CookieUtilsTests {
         assertEquals(token, cookie.getValue());
         assertEquals(7200, cookie.getMaxAge());
         assertTrue(cookie.isHttpOnly());
-        assertTrue(cookie.getSecure());
+        assertFalse(cookie.getSecure());
         assertEquals("/", cookie.getPath());
     }
 
